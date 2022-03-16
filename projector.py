@@ -69,8 +69,8 @@ class OperatorToken(Token):
         match symbol:
             case '*': self.precedence = 5
             case '/': self.precedence = 4
-            case '+': self.precedence = 3
-            case '-': self.precedence = 2
+            case '-': self.precedence = 3
+            case '+': self.precedence = 2
             case '=': self.precedence = 1
             case _: self.precedence = 0
 
@@ -173,13 +173,13 @@ class OperationExpression:
 
 
 def get_next_operator_index(token_group):
-    operator_precedence = BIGGEST_PRECEDENCE
+    operator_precedence = BIGGEST_PRECEDENCE + 1
     operator_index = -1
 
     index = len(token_group) - 1
     for token in list(reversed(token_group.token_list)):
         if isinstance(token, OperatorToken) and \
-                token.precedence <= operator_precedence:
+                token.precedence < operator_precedence:
             operator_index = index
             operator_precedence = token.precedence
 
