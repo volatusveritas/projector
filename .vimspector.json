@@ -1,0 +1,25 @@
+{
+    "configurations": {
+        "DebugPy: Launch": {
+            "adapter": "debugpy",
+            "filetypes": [ "python" ],
+            "configuration": {
+                "name": "DebugPy: Launch",
+                "type": "python",
+                "request": "launch",
+                "cwd": "${cwd}",
+                "python": "python",
+                "stopOnEntry": true,
+                "console": "externalTerminal",
+                "debugOptions": [],
+                "program": "${file}"
+            },
+            "breakpoints": {
+                "exception": {
+                    "raised": "N",
+                    "uncaught": "Y"
+                }
+            }
+        }
+    }
+}
