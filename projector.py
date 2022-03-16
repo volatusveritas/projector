@@ -232,20 +232,27 @@ def tokenize(expression):
 
     index = 0
     while index < len(expression):
-        if expression[index] == '(':
-            token_group, index = extract_group(expression, index)
-            token_list.append(token_group)
-        elif expression[index] in DIGITS:
+        if expression[index] in DIGITS:
             number_string = extract_integer(expression, index)
             index += len(number_string) - 1
             token_list.append(IntegerToken(number_string))
-        elif expression[index] == '+': token_list.append(OperatorAddToken())
-        elif expression[index] == '-': token_list.append(OperatorSubToken())
-        elif expression[index] == '*': token_list.append(OperatorMulToken())
-        elif expression[index] == '/': token_list.append(OperatorDivToken())
-        elif expression[index] == '=': token_list.append(OperatorAssignToken())
-        else:
-            raise InvalidSymbolError(expression[index])
+
+        match expression[index]:
+            case '(':
+                token_group, index = extract_group(expression, index)
+                token_list.append(token_group)
+            case '+':
+                token_list.append(OperatorAddToken())
+            case '-':
+                token_list.append(OperatorSubToken())
+            case '*':
+                token_list.append(OperatorMulToken())
+            case '/':
+                token_list.append(OperatorDivToken())
+            case '=':
+                token_list.append(OperatorAssignToken())
+            case _:
+                raise InvalidSymbolError(expression[index])
 
         index += 1
 
