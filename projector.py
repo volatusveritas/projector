@@ -236,23 +236,23 @@ def tokenize(expression):
             number_string = extract_integer(expression, index)
             index += len(number_string) - 1
             token_list.append(IntegerToken(number_string))
-
-        match expression[index]:
-            case '(':
-                token_group, index = extract_group(expression, index)
-                token_list.append(token_group)
-            case '+':
-                token_list.append(OperatorAddToken())
-            case '-':
-                token_list.append(OperatorSubToken())
-            case '*':
-                token_list.append(OperatorMulToken())
-            case '/':
-                token_list.append(OperatorDivToken())
-            case '=':
-                token_list.append(OperatorAssignToken())
-            case _:
-                raise InvalidSymbolError(expression[index])
+        else:
+            match expression[index]:
+                case '(':
+                    token_group, index = extract_group(expression, index)
+                    token_list.append(token_group)
+                case '+':
+                    token_list.append(OperatorAddToken())
+                case '-':
+                    token_list.append(OperatorSubToken())
+                case '*':
+                    token_list.append(OperatorMulToken())
+                case '/':
+                    token_list.append(OperatorDivToken())
+                case '=':
+                    token_list.append(OperatorAssignToken())
+                case _:
+                    raise InvalidSymbolError(expression[index])
 
         index += 1
 
