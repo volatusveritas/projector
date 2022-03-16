@@ -1,7 +1,4 @@
-import string
-
-
-
+DIGITS = "0123456789"
 
 SMALLEST_PRECEDENCE = 1
 BIGGEST_PRECEDENCE = 5
@@ -208,7 +205,7 @@ def extract_integer(expression, starting_index):
 
     if starting_index < len(expression) - 1:
         for character in expression[starting_index + 1 :]:
-            if character not in string.digits: break
+            if character not in DIGITS: break
 
             number_string += character
 
@@ -238,7 +235,7 @@ def tokenize(expression):
         if expression[index] == '(':
             token_group, index = extract_group(expression, index)
             token_list.append(token_group)
-        elif expression[index] in string.digits:
+        elif expression[index] in DIGITS:
             number_string = extract_integer(expression, index)
             index += len(number_string) - 1
             token_list.append(IntegerToken(number_string))
