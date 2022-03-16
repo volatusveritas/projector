@@ -282,7 +282,7 @@ def main():
         input_expression = input("ProjectOr expression: ").replace(' ', '')
         token_list = tokenize(input_expression)
         parsed_expression = parse(TokenGroup(token_list))
-        print(parsed_expression.evaluate())
+        print(f"ProjectOr result: {parsed_expression.evaluate()}")
     except ProjectorError as ex:
         print(ex)
 
