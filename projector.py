@@ -4,6 +4,7 @@ import string
 
 
 SMALLEST_PRECEDENCE = 1
+BIGGEST_PRECEDENCE = 5
 
 
 
@@ -103,7 +104,7 @@ class TokenGroup(Token):
 
 class IntegerToken(ValueToken):
     def __init__(self, value):
-        super().__init__(value)
+        super().__init__(int(value))
 
     def __str__(self):
         return f"<Token: INT> {self.value}"
@@ -164,16 +165,19 @@ class OperationExpression:
 
 
 def get_next_operator_index(token_group):
-    operator_precedence = 0
+    operator_precedence = BIGGEST_PRECEDENCE
     operator_index = -1
 
-    for index, token in enumerate(list(reversed(token_group.token_list))):
+    index = len(token_group) - 1
+    for token in list(reversed(token_group.token_list)):
         if isinstance(token, OperatorToken) and \
-                token.precedence < operator_precedence:
+                token.precedence <= operator_precedence:
             operator_index = index
             operator_precedence = token.precedence
 
             if token.precedence == SMALLEST_PRECEDENCE: break
+
+        index -= 1
 
     return operator_index
 
@@ -252,7 +256,6 @@ def parse(token):
     if isinstance(token, ValueToken):
         return ValueExpression(token)
     elif isinstance(token, OperatorToken):
-        # Not detecting operations?
         return OperationExpression(token)
 
     if not token.operative:
@@ -265,8 +268,6 @@ def parse(token):
 
     left_tokens = token[: operator_index]
     right_tokens = token[operator_index :]
-
-    # HACK: This is not a permanent solution to practical bounds checking
     del right_tokens[0]
 
     return OperationExpression(
@@ -280,10 +281,8 @@ def main():
     try:
         input_expression = input("ProjectOr expression: ").replace(' ', '')
         token_list = tokenize(input_expression)
-        print("TOKENS:")
-        for token in token_list: print(token)
         expression = parse(TokenGroup(token_list))
-        result = expression.evaluate()  # error line
+        result = expression.evaluate()
         print(result)
     except ProjectorError as ex:
         print(ex)
