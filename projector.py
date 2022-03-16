@@ -22,6 +22,14 @@ class InvalidSymbolError(ProjectorError):
         return f"Invalid symbol '{self.symbol}'"
 
 
+class InvalidOperatorSignature(ProjectorError):
+    def __init__(self, symbol):
+        self.symbol = symbol
+
+    def __str__(self):
+        return f"Invalid operator signature '{self.symbol}'"
+
+
 class UnmatchedParenthesesError(ProjectorError):
     def __init__(self, opening_index):
         self.opening_index = opening_index
@@ -159,7 +167,7 @@ class OperationExpression:
             case '/': return left_value / right_value
             case '+': return left_value + right_value
             case '-': return left_value - right_value
-            case _: return left_value * right_value
+            case _: raise InvalidOperatorSignature(self.operator_token.symbol)
 
 
 
@@ -234,16 +242,11 @@ def tokenize(expression):
             number_string = extract_integer(expression, index)
             index += len(number_string) - 1
             token_list.append(IntegerToken(number_string))
-        elif expression[index] == '+':
-            token_list.append(OperatorAddToken())
-        elif expression[index] == '-':
-            token_list.append(OperatorSubToken())
-        elif expression[index] == '*':
-            token_list.append(OperatorMulToken())
-        elif expression[index] == '/':
-            token_list.append(OperatorDivToken())
-        elif expression[index] == '=':
-            token_list.append(OperatorAssignToken())
+        elif expression[index] == '+': token_list.append(OperatorAddToken())
+        elif expression[index] == '-': token_list.append(OperatorSubToken())
+        elif expression[index] == '*': token_list.append(OperatorMulToken())
+        elif expression[index] == '/': token_list.append(OperatorDivToken())
+        elif expression[index] == '=': token_list.append(OperatorAssignToken())
         else:
             raise InvalidSymbolError(expression[index])
 
@@ -281,9 +284,8 @@ def main():
     try:
         input_expression = input("ProjectOr expression: ").replace(' ', '')
         token_list = tokenize(input_expression)
-        expression = parse(TokenGroup(token_list))
-        result = expression.evaluate()
-        print(result)
+        parsed_expression = parse(TokenGroup(token_list))
+        print(parsed_expression.evaluate())
     except ProjectorError as ex:
         print(ex)
 
