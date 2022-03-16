@@ -258,17 +258,21 @@ def parse(token):
     elif isinstance(token, OperatorToken):
         return OperationExpression(token)
 
+    if not token:
+        raise ValueAbsentError
+
     if not token.operative:
         if len(token) > 1: raise OperatorAbsentError
-        if len(token) == 0: raise ValueAbsentError
 
         return parse(token.token_list[0])
 
     operator_index = get_next_operator_index(token)
 
+    if operator_index == 0 or operator_index == len(token) - 1:
+        raise ValueAbsentError
+
     left_tokens = token[: operator_index]
-    right_tokens = token[operator_index :]
-    del right_tokens[0]
+    right_tokens = token[operator_index + 1 :]
 
     return OperationExpression(
         token.token_list[operator_index],
