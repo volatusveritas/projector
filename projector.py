@@ -71,6 +71,7 @@ class OperatorToken(Token):
         match symbol:
             case '*': self.precedence = 5
             case '/': self.precedence = 4
+            case '%': self.precedence = 4
             case '-': self.precedence = 3
             case '+': self.precedence = 2
             case '=': self.precedence = 1
@@ -138,6 +139,11 @@ class OperatorMulToken(OperatorToken):
 class OperatorDivToken(OperatorToken):
     def __init__(self):
         super().__init__('/')
+
+
+class OperatorModToken(OperatorToken):
+    def __init__(self):
+        super().__init__('%')
 
 
 class OperatorAssignToken(OperatorToken):
@@ -216,6 +222,23 @@ class OperationDivExpression(OperationExpression):
             raise ZeroDivisionError
 
         return left_value / right_value
+
+
+class OperationModExpression(OperationExpression):
+    def evaluate(self):
+        left_value = self.left.evaluate()
+        right_value = self.right.evaluate()
+
+        if left_value == None or right_value == None:
+            raise ValueAbsentError
+
+        if not isinstance(left_value, int) or not isinstance(right_value, int):
+            raise TypeError
+
+        if right_value == 0:
+            raise ZeroDivisionError
+
+        return left_value % right_value
 
 
 
@@ -298,6 +321,8 @@ def get_operation_expression_type(operator_token):
         return OperationMulExpression
     elif isinstance(operator_token, OperatorDivToken):
         return OperationDivExpression
+    elif isinstance(operator_token, OperatorModToken):
+        return OperationModExpression
     else:
         raise UnexpectedError
 
@@ -325,6 +350,8 @@ def tokenize(expression):
                     token_list.append(OperatorMulToken())
                 case '/':
                     token_list.append(OperatorDivToken())
+                case '%':
+                    token_list.append(OperatorModToken())
                 case '=':
                     token_list.append(OperatorAssignToken())
                 case _:
@@ -375,11 +402,8 @@ def evaluate(input_expression):
 
 
 def main():
-    try:
-        input_expression = input("ProjectOr expression: ")
-        print(f"ProjectOr result: {evaluate(input_expression)}")
-    except Exception as ex:
-        print(ex)
+    input_expression = input("ProjectOr expression: ")
+    print(f"ProjectOr result: {evaluate(input_expression)}")
 
 
 
