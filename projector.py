@@ -45,6 +45,11 @@ class OperatorAbsentError(ProjectorError):
         return "Expected operator after value"
 
 
+class UnexpectedError(ProjectorError):
+    def __str__(self):
+        return "An unexpected error happened"
+
+
 
 class Token:
     def __str__(self):
@@ -141,7 +146,12 @@ class OperatorAssignToken(OperatorToken):
 
 
 
-class ValueExpression:
+class Expression:
+    def evaluate(self):
+        return None
+
+
+class ValueExpression(Expression):
     def __init__(self, value_token):
         self.value_token = value_token
 
@@ -149,22 +159,60 @@ class ValueExpression:
         return self.value_token.value
 
 
-class OperationExpression:
-    def __init__(self, operator_token, left=None, right=None):
-        self.operator_token = operator_token
+class OperationExpression(Expression):
+    def __init__(self, left=None, right=None):
         self.left = left
         self.right = right
 
+
+class OperationAddExpression(OperationExpression):
     def evaluate(self):
         left_value = self.left.evaluate()
         right_value = self.right.evaluate()
 
-        match self.operator_token.symbol:
-            case '*': return left_value * right_value
-            case '/': return left_value / right_value
-            case '+': return left_value + right_value
-            case '-': return left_value - right_value
-            case _: raise InvalidOperatorSignature(self.operator_token.symbol)
+        if not right_value:
+            raise ValueAbsentError
+
+        if not left_value:
+            left_value = 0
+
+        return left_value + right_value
+
+
+class OperationSubExpression(OperationExpression):
+    def evaluate(self):
+        left_value = self.left.evaluate()
+        right_value = self.right.evaluate()
+
+        if not right_value:
+            raise ValueAbsentError
+
+        if not left_value:
+            left_value = 0
+
+        return left_value - right_value
+
+
+class OperationMulExpression(OperationExpression):
+    def evaluate(self):
+        left_value = self.left.evaluate()
+        right_value = self.right.evaluate()
+
+        if not (left_value and right_value):
+            raise ValueAbsentError
+
+        return left_value * right_value
+
+
+class OperationDivExpression(OperationExpression):
+    def evaluate(self):
+        left_value = self.left.evaluate()
+        right_value = self.right.evaluate()
+
+        if not (left_value and right_value):
+            raise ValueAbsentError
+
+        return left_value / right_value
 
 
 
@@ -238,6 +286,19 @@ def extract_group(expression, opening_index):
     return TokenGroup(token_list), closing_index
 
 
+def get_operation_expression_type(operator_token):
+    if isinstance(operator_token, OperatorAddToken):
+        return OperationAddExpression
+    elif isinstance(operator_token, OperatorSubToken):
+        return OperationSubExpression
+    elif isinstance(operator_token, OperatorMulToken):
+        return OperationMulExpression
+    elif isinstance(operator_token, OperatorDivToken):
+        return OperationDivExpression
+    else:
+        raise UnexpectedError
+
+
 
 def tokenize(expression):
     token_list = []
@@ -271,14 +332,9 @@ def tokenize(expression):
     return token_list
 
 
-def parse(token):
-    if isinstance(token, ValueToken):
-        return ValueExpression(token)
-    elif isinstance(token, OperatorToken):
-        return OperationExpression(token)
-
+def parse_group(token):
     if not token:
-        raise ValueAbsentError
+        return Expression()
 
     if not token.operative:
         if len(token) > 1: raise OperatorAbsentError
@@ -287,17 +343,24 @@ def parse(token):
 
     operator_index = get_next_operator_index(token)
 
-    if operator_index == 0 or operator_index == len(token) - 1:
-        raise ValueAbsentError
-
     left_tokens = token[: operator_index]
     right_tokens = token[operator_index + 1 :]
 
-    return OperationExpression(
-        token.token_list[operator_index],
+    return get_operation_expression_type(token[operator_index])(
         parse(TokenGroup(left_tokens)),
         parse(TokenGroup(right_tokens))
     )
+
+
+def parse(token):
+    if isinstance(token, ValueToken):
+        return ValueExpression(token)
+    elif isinstance(token, OperatorToken):
+        return get_operation_expression_type(token)()
+    elif isinstance(token, TokenGroup):
+        return parse_group(token)
+    else:
+        raise UnexpectedError
 
 
 def evaluate(input_expression):
