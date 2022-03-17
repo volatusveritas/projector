@@ -170,10 +170,10 @@ class OperationAddExpression(OperationExpression):
         left_value = self.left.evaluate()
         right_value = self.right.evaluate()
 
-        if not right_value:
+        if right_value == None:
             raise ValueAbsentError
 
-        if not left_value:
+        if left_value == None:
             left_value = 0
 
         return left_value + right_value
@@ -184,10 +184,10 @@ class OperationSubExpression(OperationExpression):
         left_value = self.left.evaluate()
         right_value = self.right.evaluate()
 
-        if not right_value:
+        if right_value == None:
             raise ValueAbsentError
 
-        if not left_value:
+        if left_value == None:
             left_value = 0
 
         return left_value - right_value
@@ -198,7 +198,7 @@ class OperationMulExpression(OperationExpression):
         left_value = self.left.evaluate()
         right_value = self.right.evaluate()
 
-        if not (left_value and right_value):
+        if left_value == None or right_value == None:
             raise ValueAbsentError
 
         return left_value * right_value
@@ -209,8 +209,11 @@ class OperationDivExpression(OperationExpression):
         left_value = self.left.evaluate()
         right_value = self.right.evaluate()
 
-        if not (left_value and right_value):
+        if left_value == None or right_value == None:
             raise ValueAbsentError
+
+        if right_value == 0:
+            raise ZeroDivisionError
 
         return left_value / right_value
 
@@ -375,7 +378,7 @@ def main():
     try:
         input_expression = input("ProjectOr expression: ")
         print(f"ProjectOr result: {evaluate(input_expression)}")
-    except ProjectorError as ex:
+    except Exception as ex:
         print(ex)
 
 
