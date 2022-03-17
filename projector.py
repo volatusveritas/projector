@@ -216,10 +216,22 @@ def extract_group(expression, opening_index):
     if opening_index == len(expression) - 1:
         raise UnmatchedParenthesesError(opening_index)
 
-    closing_index = expression.rfind(')', opening_index + 1)
+    closing_index = expression.find(')', opening_index + 1)
 
     if closing_index == -1:
         raise UnmatchedParenthesesError(opening_index)
+
+    subgroup_count = expression.count('(', opening_index + 1, closing_index)
+
+    if subgroup_count:
+        if closing_index == len(expression) - 1:
+            raise UnmatchedParenthesesError(opening_index)
+
+        for _i in range(subgroup_count):
+            closing_index = expression.find(')', closing_index + 1)
+
+        if closing_index == -1:
+            raise UnmatchedParenthesesError(opening_index)
 
     token_list = tokenize(expression[opening_index + 1 : closing_index])
 
