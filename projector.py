@@ -221,7 +221,7 @@ class OperationDivExpression(OperationExpression):
         if right_value == 0:
             raise ZeroDivisionError
 
-        return left_value / right_value
+        return left_value // right_value
 
 
 class OperationModExpression(OperationExpression):
