@@ -20,6 +20,14 @@ class ProjectorError(Exception):
         return "Unknown error"
 
 
+class UndefinedIdentifierError(ProjectorError):
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return f"Undefined name '{self.name}'"
+
+
 class InvalidSymbolError(ProjectorError):
     def __init__(self, symbol):
         self.symbol = symbol
@@ -28,7 +36,7 @@ class InvalidSymbolError(ProjectorError):
         return f"Invalid symbol '{self.symbol}'"
 
 
-class InvalidOperatorSignature(ProjectorError):
+class InvalidOperatorSignatureError(ProjectorError):
     def __init__(self, symbol):
         self.symbol = symbol
 
@@ -63,6 +71,12 @@ class UnexpectedError(ProjectorError):
 class Identifier:
     def __init__(self, name):
         self.name = name
+
+    def get_value(self):
+        if not self.name in variable_bank:
+            raise UndefinedIdentifierError(self.name)
+
+        return variable_bank[self.name]
 
 
 
@@ -210,11 +224,15 @@ class OperationAddExpression(OperationExpression):
         left_term = self.left.evaluate()
         right_term = self.right.evaluate()
 
-        if right_term == None:
+        if right_term is None:
             raise ValueAbsentError
+        elif isinstance(right_term, Identifier):
+            right_term = right_term.get_value()
 
-        if left_term == None:
+        if left_term is None:
             left_term = 0
+        elif isinstance(left_term, Identifier):
+            left_term = left_term.get_value()
 
         return left_term + right_term
 
@@ -224,11 +242,15 @@ class OperationSubExpression(OperationExpression):
         left_term = self.left.evaluate()
         right_term = self.right.evaluate()
 
-        if right_term == None:
+        if right_term is None:
             raise ValueAbsentError
+        elif isinstance(right_term, Identifier):
+            right_term = right_term.get_value()
 
-        if left_term == None:
+        if left_term is None:
             left_term = 0
+        elif isinstance(left_term, Identifier):
+            left_term = left_term.get_value()
 
         return left_term - right_term
 
@@ -238,8 +260,14 @@ class OperationMulExpression(OperationExpression):
         left_factor = self.left.evaluate()
         right_factor = self.right.evaluate()
 
-        if left_factor == None or right_factor == None:
+        if left_factor is None or right_factor is None:
             raise ValueAbsentError
+
+        if isinstance(left_factor, Identifier):
+            left_factor = left_factor.get_value()
+
+        if isinstance(right_factor, Identifier):
+            right_factor = right_factor.get_value()
 
         return left_factor * right_factor
 
@@ -249,11 +277,16 @@ class OperationDivExpression(OperationExpression):
         dividend = self.left.evaluate()
         divisor = self.right.evaluate()
 
-        if dividend == None or divisor == None:
+        if dividend is None or divisor is None:
             raise ValueAbsentError
 
         if divisor == 0:
             raise ZeroDivisionError
+        elif isinstance(divisor, Identifier):
+            divisor = divisor.get_value()
+
+        if isinstance(dividend, Identifier):
+            dividend = dividend.get_value()
 
         return dividend // divisor
 
@@ -263,7 +296,7 @@ class OperationModExpression(OperationExpression):
         dividend = self.left.evaluate()
         divisor = self.right.evaluate()
 
-        if dividend == None or divisor == None:
+        if dividend is None or divisor is None:
             raise ValueAbsentError
 
         if not isinstance(dividend, int) or not isinstance(divisor, int):
@@ -271,6 +304,11 @@ class OperationModExpression(OperationExpression):
 
         if divisor == 0:
             raise ZeroDivisionError
+        elif isinstance(divisor, Identifier):
+            divisor = divisor.get_value()
+
+        if isinstance(dividend, Identifier):
+            dividend = dividend.get_value()
 
         return dividend % divisor
 
@@ -280,12 +318,15 @@ class OperationAssignExpression(OperationExpression):
         identifier = self.left.evaluate()
         value = self.right.evaluate()
 
-        if identifier == None or value == None:
+        if identifier is None or value is None:
             raise ValueAbsentError
 
         if (not isinstance(identifier, Identifier) or
                 not isinstance(value, (int, str))):
             raise TypeError
+
+        if isinstance(value, Identifier):
+            value = value.get_value()
 
         variable_bank[identifier.name] = value
 
