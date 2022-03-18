@@ -1,9 +1,7 @@
-import string
-
-
-
+DIGITS = "0123456789"
 
 SMALLEST_PRECEDENCE = 1
+BIGGEST_PRECEDENCE = 5
 
 
 
@@ -19,6 +17,14 @@ class InvalidSymbolError(ProjectorError):
 
     def __str__(self):
         return f"Invalid symbol '{self.symbol}'"
+
+
+class InvalidOperatorSignature(ProjectorError):
+    def __init__(self, symbol):
+        self.symbol = symbol
+
+    def __str__(self):
+        return f"Invalid operator signature '{self.symbol}'"
 
 
 class UnmatchedParenthesesError(ProjectorError):
@@ -37,6 +43,11 @@ class ValueAbsentError(ProjectorError):
 class OperatorAbsentError(ProjectorError):
     def __str__(self):
         return "Expected operator after value"
+
+
+class UnexpectedError(ProjectorError):
+    def __str__(self):
+        return "An unexpected error happened"
 
 
 
@@ -60,8 +71,9 @@ class OperatorToken(Token):
         match symbol:
             case '*': self.precedence = 5
             case '/': self.precedence = 4
-            case '+': self.precedence = 3
-            case '-': self.precedence = 2
+            case '%': self.precedence = 4
+            case '-': self.precedence = 3
+            case '+': self.precedence = 2
             case '=': self.precedence = 1
             case _: self.precedence = 0
 
@@ -103,7 +115,7 @@ class TokenGroup(Token):
 
 class IntegerToken(ValueToken):
     def __init__(self, value):
-        super().__init__(value)
+        super().__init__(int(value))
 
     def __str__(self):
         return f"<Token: INT> {self.value}"
@@ -129,13 +141,23 @@ class OperatorDivToken(OperatorToken):
         super().__init__('/')
 
 
+class OperatorModToken(OperatorToken):
+    def __init__(self):
+        super().__init__('%')
+
+
 class OperatorAssignToken(OperatorToken):
     def __init__(self):
         super().__init__('=')
 
 
 
-class ValueExpression:
+class Expression:
+    def evaluate(self):
+        return None
+
+
+class ValueExpression(Expression):
     def __init__(self, value_token):
         self.value_token = value_token
 
@@ -143,37 +165,98 @@ class ValueExpression:
         return self.value_token.value
 
 
-class OperationExpression:
-    def __init__(self, operator_token, left=None, right=None):
-        self.operator_token = operator_token
+class OperationExpression(Expression):
+    def __init__(self, left=None, right=None):
         self.left = left
         self.right = right
 
+
+class OperationAddExpression(OperationExpression):
     def evaluate(self):
         left_value = self.left.evaluate()
         right_value = self.right.evaluate()
 
-        match self.operator_token.symbol:
-            case '*': return left_value * right_value
-            case '/': return left_value / right_value
-            case '+': return left_value + right_value
-            case '-': return left_value - right_value
-            case _: return left_value * right_value
+        if right_value == None:
+            raise ValueAbsentError
+
+        if left_value == None:
+            left_value = 0
+
+        return left_value + right_value
+
+
+class OperationSubExpression(OperationExpression):
+    def evaluate(self):
+        left_value = self.left.evaluate()
+        right_value = self.right.evaluate()
+
+        if right_value == None:
+            raise ValueAbsentError
+
+        if left_value == None:
+            left_value = 0
+
+        return left_value - right_value
+
+
+class OperationMulExpression(OperationExpression):
+    def evaluate(self):
+        left_value = self.left.evaluate()
+        right_value = self.right.evaluate()
+
+        if left_value == None or right_value == None:
+            raise ValueAbsentError
+
+        return left_value * right_value
+
+
+class OperationDivExpression(OperationExpression):
+    def evaluate(self):
+        left_value = self.left.evaluate()
+        right_value = self.right.evaluate()
+
+        if left_value == None or right_value == None:
+            raise ValueAbsentError
+
+        if right_value == 0:
+            raise ZeroDivisionError
+
+        return left_value // right_value
+
+
+class OperationModExpression(OperationExpression):
+    def evaluate(self):
+        left_value = self.left.evaluate()
+        right_value = self.right.evaluate()
+
+        if left_value == None or right_value == None:
+            raise ValueAbsentError
+
+        if not isinstance(left_value, int) or not isinstance(right_value, int):
+            raise TypeError
+
+        if right_value == 0:
+            raise ZeroDivisionError
+
+        return left_value % right_value
 
 
 
 
 def get_next_operator_index(token_group):
-    operator_precedence = 0
+    operator_precedence = BIGGEST_PRECEDENCE + 1
     operator_index = -1
 
-    for index, token in enumerate(list(reversed(token_group.token_list))):
+    index = len(token_group) - 1
+    for token in list(reversed(token_group.token_list)):
         if isinstance(token, OperatorToken) and \
                 token.precedence < operator_precedence:
             operator_index = index
             operator_precedence = token.precedence
 
             if token.precedence == SMALLEST_PRECEDENCE: break
+
+        index -= 1
 
     return operator_index
 
@@ -196,7 +279,7 @@ def extract_integer(expression, starting_index):
 
     if starting_index < len(expression) - 1:
         for character in expression[starting_index + 1 :]:
-            if character not in string.digits: break
+            if character not in DIGITS: break
 
             number_string += character
 
@@ -207,14 +290,41 @@ def extract_group(expression, opening_index):
     if opening_index == len(expression) - 1:
         raise UnmatchedParenthesesError(opening_index)
 
-    closing_index = expression.rfind(')', opening_index + 1)
+    closing_index = expression.find(')', opening_index + 1)
 
     if closing_index == -1:
         raise UnmatchedParenthesesError(opening_index)
 
+    subgroup_count = expression.count('(', opening_index + 1, closing_index)
+
+    if subgroup_count:
+        if closing_index == len(expression) - 1:
+            raise UnmatchedParenthesesError(opening_index)
+
+        for _i in range(subgroup_count):
+            closing_index = expression.find(')', closing_index + 1)
+
+        if closing_index == -1:
+            raise UnmatchedParenthesesError(opening_index)
+
     token_list = tokenize(expression[opening_index + 1 : closing_index])
 
     return TokenGroup(token_list), closing_index
+
+
+def get_operation_expression_type(operator_token):
+    if isinstance(operator_token, OperatorAddToken):
+        return OperationAddExpression
+    elif isinstance(operator_token, OperatorSubToken):
+        return OperationSubExpression
+    elif isinstance(operator_token, OperatorMulToken):
+        return OperationMulExpression
+    elif isinstance(operator_token, OperatorDivToken):
+        return OperationDivExpression
+    elif isinstance(operator_token, OperatorModToken):
+        return OperationModExpression
+    else:
+        raise UnexpectedError
 
 
 
@@ -223,70 +333,79 @@ def tokenize(expression):
 
     index = 0
     while index < len(expression):
-        if expression[index] == '(':
-            token_group, index = extract_group(expression, index)
-            token_list.append(token_group)
-        elif expression[index] in string.digits:
+        if expression[index] in DIGITS:
             number_string = extract_integer(expression, index)
             index += len(number_string) - 1
             token_list.append(IntegerToken(number_string))
-        elif expression[index] == '+':
-            token_list.append(OperatorAddToken())
-        elif expression[index] == '-':
-            token_list.append(OperatorSubToken())
-        elif expression[index] == '*':
-            token_list.append(OperatorMulToken())
-        elif expression[index] == '/':
-            token_list.append(OperatorDivToken())
-        elif expression[index] == '=':
-            token_list.append(OperatorAssignToken())
         else:
-            raise InvalidSymbolError(expression[index])
+            match expression[index]:
+                case '(':
+                    token_group, index = extract_group(expression, index)
+                    token_list.append(token_group)
+                case '+':
+                    token_list.append(OperatorAddToken())
+                case '-':
+                    token_list.append(OperatorSubToken())
+                case '*':
+                    token_list.append(OperatorMulToken())
+                case '/':
+                    token_list.append(OperatorDivToken())
+                case '%':
+                    token_list.append(OperatorModToken())
+                case '=':
+                    token_list.append(OperatorAssignToken())
+                case _:
+                    raise InvalidSymbolError(expression[index])
 
         index += 1
 
     return token_list
 
 
-def parse(token):
-    if isinstance(token, ValueToken):
-        return ValueExpression(token)
-    elif isinstance(token, OperatorToken):
-        # Not detecting operations?
-        return OperationExpression(token)
+def parse_group(token):
+    if not token:
+        return Expression()
 
     if not token.operative:
         if len(token) > 1: raise OperatorAbsentError
-        if len(token) == 0: raise ValueAbsentError
 
         return parse(token.token_list[0])
 
     operator_index = get_next_operator_index(token)
 
     left_tokens = token[: operator_index]
-    right_tokens = token[operator_index :]
+    right_tokens = token[operator_index + 1 :]
 
-    # HACK: This is not a permanent solution to practical bounds checking
-    del right_tokens[0]
-
-    return OperationExpression(
-        token.token_list[operator_index],
+    return get_operation_expression_type(token[operator_index])(
         parse(TokenGroup(left_tokens)),
         parse(TokenGroup(right_tokens))
     )
 
 
+def parse(token):
+    if isinstance(token, ValueToken):
+        return ValueExpression(token)
+    elif isinstance(token, OperatorToken):
+        return get_operation_expression_type(token)()
+    elif isinstance(token, TokenGroup):
+        return parse_group(token)
+    else:
+        raise UnexpectedError
+
+
+def evaluate(input_expression):
+    input_expression = input_expression.replace(' ', '')
+    token_list = tokenize(input_expression)
+    parsed_expression = parse(TokenGroup(token_list))
+    return parsed_expression.evaluate()
+
+
+
 def main():
-    try:
-        input_expression = input("ProjectOr expression: ").replace(' ', '')
-        token_list = tokenize(input_expression)
-        print("TOKENS:")
-        for token in token_list: print(token)
-        expression = parse(TokenGroup(token_list))
-        result = expression.evaluate()  # error line
-        print(result)
-    except ProjectorError as ex:
-        print(ex)
+    input_expression = input("ProjectOr expression: ")
+    print(f"ProjectOr result: {evaluate(input_expression)}")
+
+
 
 
 if __name__ == "__main__":
