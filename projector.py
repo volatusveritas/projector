@@ -475,8 +475,14 @@ def evaluate(input_expression):
 
 
 def main():
-    input_expression = input("ProjectOr expression: ")
-    print(f"ProjectOr result: {evaluate(input_expression)}")
+    while True:
+        input_expression = input("> ")
+
+        if input_expression == "stop":
+            break
+
+        else:
+            print(f">>> {evaluate(input_expression)}")
 
 
 
