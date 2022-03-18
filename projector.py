@@ -98,8 +98,11 @@ class TokenGroup(Token):
 
         group_string = f"{indent_padding}<Token: GRP -- {hash_signature}"
 
-        if self.operative: group_string += " (operative)"
-        if self.nested: group_string += " (nested)"
+        if self.operative:
+            group_string += " (operative)"
+
+        if self.nested:
+            group_string += " (nested)"
 
         for token in self.token_list:
             if isinstance(token, TokenGroup):
@@ -249,12 +252,13 @@ def get_next_operator_index(token_group):
 
     index = len(token_group) - 1
     for token in list(reversed(token_group.token_list)):
-        if isinstance(token, OperatorToken) and \
-                token.precedence < operator_precedence:
+        if (isinstance(token, OperatorToken) and
+                token.precedence < operator_precedence):
             operator_index = index
             operator_precedence = token.precedence
 
-            if token.precedence == SMALLEST_PRECEDENCE: break
+            if token.precedence == SMALLEST_PRECEDENCE:
+                break
 
         index -= 1
 
@@ -266,10 +270,13 @@ def get_token_list_attributes(token_list):
     nested = False
 
     for token in token_list:
-        if isinstance(token, OperatorToken): operative = True
-        elif isinstance(token, TokenGroup): nested = True
+        if isinstance(token, OperatorToken):
+            operative = True
+        elif isinstance(token, TokenGroup):
+            nested = True
 
-        if operative and nested: break
+        if operative and nested:
+            break
 
     return operative, nested
 
@@ -279,7 +286,8 @@ def extract_integer(expression, starting_index):
 
     if starting_index < len(expression) - 1:
         for character in expression[starting_index + 1 :]:
-            if character not in DIGITS: break
+            if character not in DIGITS:
+                break
 
             number_string += character
 
@@ -301,7 +309,7 @@ def extract_group(expression, opening_index):
         if closing_index == len(expression) - 1:
             raise UnmatchedParenthesesError(opening_index)
 
-        for _i in range(subgroup_count):
+        for _ in range(subgroup_count):
             closing_index = expression.find(')', closing_index + 1)
 
         if closing_index == -1:
@@ -367,7 +375,8 @@ def parse_group(token):
         return Expression()
 
     if not token.operative:
-        if len(token) > 1: raise OperatorAbsentError
+        if len(token) > 1:
+            raise OperatorAbsentError
 
         return parse(token.token_list[0])
 
