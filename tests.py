@@ -23,6 +23,9 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(evaluate("5*(2+1)"), 15)
         self.assertEqual(evaluate("5+(2*(4/2))-1"), 8)
 
+    def test_variables(self):
+        self.assertEqual(evaluate("x = 5"))
+
 
 
 

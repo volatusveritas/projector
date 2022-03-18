@@ -1,4 +1,5 @@
 import string
+import sys
 
 
 
@@ -295,7 +296,7 @@ class OperationAssignExpression(OperationExpression):
 
         variable_bank[self.left.identifier_token.name] = value
 
-        return value
+        return None
 
 
 
@@ -481,14 +482,28 @@ def evaluate(input_expression):
 
 
 def main():
+    if len(sys.argv) > 1:
+        for argument in sys.argv[1 :]:
+            for input_expression in argument.replace(' ', '').split(';'):
+                result = evaluate(input_expression)
+
+                if result:
+                    print(result)
+        return
+
     while True:
         input_expression = input("> ")
 
         if input_expression == "stop":
             break
 
-        else:
-            print(f">>> {evaluate(input_expression)}")
+        try:
+            result = evaluate(input_expression)
+
+            if result:
+                print(f">>> {result}")
+        except Exception as ex:
+            print(ex)
 
 
 
