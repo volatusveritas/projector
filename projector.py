@@ -68,18 +68,6 @@ class UnexpectedError(ProjectorError):
 
 
 
-class Identifier:
-    def __init__(self, name):
-        self.name = name
-
-    def get_value(self):
-        if not self.name in variable_bank:
-            raise UndefinedIdentifierError(self.name)
-
-        return variable_bank[self.name]
-
-
-
 class Token:
     def __str__(self):
         return "<Token: NUL>"
@@ -112,10 +100,10 @@ class OperatorToken(Token):
 
 class IdentifierToken(Token):
     def __init__(self, name):
-        self.identifier = Identifier(name)
+        self.name = name
 
     def __str__(self):
-        return f"<Token: ID> {self.identifier.name}"
+        return f"<Token: ID> {self.name}"
 
 
 class TokenGroup(Token):
@@ -210,7 +198,10 @@ class IdentifierExpression(Expression):
         self.identifier_token = identifier_token
 
     def evaluate(self):
-        return self.identifier_token.identifier
+        if not self.identifier_token.name in variable_bank:
+            raise UndefinedIdentifierError(self.identifier_token.name)
+
+        return variable_bank[self.identifier_token.name]
 
 
 class OperationExpression(Expression):
@@ -226,13 +217,9 @@ class OperationAddExpression(OperationExpression):
 
         if right_term is None:
             raise ValueAbsentError
-        elif isinstance(right_term, Identifier):
-            right_term = right_term.get_value()
 
         if left_term is None:
             left_term = 0
-        elif isinstance(left_term, Identifier):
-            left_term = left_term.get_value()
 
         return left_term + right_term
 
@@ -244,13 +231,9 @@ class OperationSubExpression(OperationExpression):
 
         if right_term is None:
             raise ValueAbsentError
-        elif isinstance(right_term, Identifier):
-            right_term = right_term.get_value()
 
         if left_term is None:
             left_term = 0
-        elif isinstance(left_term, Identifier):
-            left_term = left_term.get_value()
 
         return left_term - right_term
 
@@ -262,12 +245,6 @@ class OperationMulExpression(OperationExpression):
 
         if left_factor is None or right_factor is None:
             raise ValueAbsentError
-
-        if isinstance(left_factor, Identifier):
-            left_factor = left_factor.get_value()
-
-        if isinstance(right_factor, Identifier):
-            right_factor = right_factor.get_value()
 
         return left_factor * right_factor
 
@@ -282,11 +259,6 @@ class OperationDivExpression(OperationExpression):
 
         if divisor == 0:
             raise ZeroDivisionError
-        elif isinstance(divisor, Identifier):
-            divisor = divisor.get_value()
-
-        if isinstance(dividend, Identifier):
-            dividend = dividend.get_value()
 
         return dividend // divisor
 
@@ -304,31 +276,24 @@ class OperationModExpression(OperationExpression):
 
         if divisor == 0:
             raise ZeroDivisionError
-        elif isinstance(divisor, Identifier):
-            divisor = divisor.get_value()
-
-        if isinstance(dividend, Identifier):
-            dividend = dividend.get_value()
 
         return dividend % divisor
 
 
 class OperationAssignExpression(OperationExpression):
     def evaluate(self):
-        identifier = self.left.evaluate()
-        value = self.right.evaluate()
-
-        if identifier is None or value is None:
-            raise ValueAbsentError
-
-        if (not isinstance(identifier, Identifier) or
-                not isinstance(value, (int, str))):
+        if not isinstance(self.left, IdentifierExpression):
             raise TypeError
 
-        if isinstance(value, Identifier):
-            value = value.get_value()
+        value = self.right.evaluate()
 
-        variable_bank[identifier.name] = value
+        if value is None:
+            raise ValueAbsentError
+
+        if not isinstance(value, (int, str)):
+            raise TypeError
+
+        variable_bank[self.left.identifier_token.name] = value
 
         return value
 
