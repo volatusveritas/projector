@@ -1,90 +1,127 @@
-DIGITS = "0123456789"
+import string
+import sys
+import enum
+
+
+
+
+IDENTIFIER_BEGIN_CHARACTERS = string.ascii_letters + '_'
+IDENTIFIER_CHARACTERS = IDENTIFIER_BEGIN_CHARACTERS + string.digits
 
 SMALLEST_PRECEDENCE = 1
 BIGGEST_PRECEDENCE = 5
 
 
+variable_bank = {}
+
+
+
+
+class OperationType(enum.Enum):
+    NONE = 0
+    ADDITION = enum.auto()
+    SUBTRACTION = enum.auto()
+    MULTIPLICATION = enum.auto()
+    DIVISION = enum.auto()
+    MODULO = enum.auto()
+    ASSIGNMENT = enum.auto()
+
+    def __str__(self):
+        match self.value:
+            case self.ADDITION:
+                return "Addition"
+            case self.SUBTRACTION:
+                return "Subtraction"
+            case self.MULTIPLICATION:
+                return "Multiplication"
+            case self.DIVISION:
+                return "Division"
+            case self.MODULO:
+                return "Modulo"
+            case self.ASSIGNMENT:
+                return "Assignment"
+            case _:
+                return "None"
+
+
+class ValueType(enum.Enum):
+    NONE = 0
+    INTEGER = enum.auto()
+    FLOATING_POINT = enum.auto()
+    STRING = enum.auto()
+    BOOL = enum.auto()
+
+    def __str__(self):
+        match self.value:
+            case self.INTEGER:
+                return "Integer"
+            case self.FLOATING_POINT:
+                return "Float"
+            case self.STRING:
+                return "String"
+            case self.BOOL:
+                return "Bool"
+            case _:
+                return "None"
+
+
 
 
 class ProjectorError(Exception):
-    def __str__(self):
-        return "Unknown error"
-
-
-class InvalidSymbolError(ProjectorError):
-    def __init__(self, symbol):
-        self.symbol = symbol
-
-    def __str__(self):
-        return f"Invalid symbol '{self.symbol}'"
-
-
-class InvalidOperatorSignature(ProjectorError):
-    def __init__(self, symbol):
-        self.symbol = symbol
-
-    def __str__(self):
-        return f"Invalid operator signature '{self.symbol}'"
-
-
-class UnmatchedParenthesesError(ProjectorError):
-    def __init__(self, opening_index):
-        self.opening_index = opening_index
-
-    def __str__(self):
-        return f"Unmatched parentheses at {self.opening_index}"
-
-
-class ValueAbsentError(ProjectorError):
-    def __str__(self):
-        return "Expected value"
-
-
-class OperatorAbsentError(ProjectorError):
-    def __str__(self):
-        return "Expected operator after value"
-
-
-class UnexpectedError(ProjectorError):
-    def __str__(self):
-        return "An unexpected error happened"
+    pass
 
 
 
 class Token:
     def __str__(self):
-        return "<Token: NUL>"
+        return "<Token: Null>"
 
 
 class ValueToken(Token):
-    def __init__(self, value):
+    def __init__(self, value, type):
         self.value = value
+        self.type = type
 
     def __str__(self):
-        return f"<Token: VAL> {self.value}"
+        return f"<Token: Value> ({str(self.type)}) {self.value}"
 
 
 class OperatorToken(Token):
-    def __init__(self, symbol):
-        self.symbol = symbol
+    def __init__(self, type):
+        self.type = type
 
-        match symbol:
-            case '*': self.precedence = 5
-            case '/': self.precedence = 4
-            case '%': self.precedence = 4
-            case '-': self.precedence = 3
-            case '+': self.precedence = 2
-            case '=': self.precedence = 1
-            case _: self.precedence = 0
+        match type:
+            case OperationType.MULTIPLICATION:
+                self.precedence = 5
+            case OperationType.DIVISION:
+                self.precedence = 4
+            case OperationType.MODULO:
+                self.precedence = 4
+            case OperationType.SUBTRACTION:
+                self.precedence = 3
+            case OperationType.ADDITION:
+                self.precedence = 2
+            case OperationType.ASSIGNMENT:
+                self.precedence = 1
+            case _:
+                self.precedence = 0
 
     def __str__(self):
-        return f"<Token: OP> {self.symbol}"
+        return f"<Token: Operation> [{str(self.type)}]"
+
+
+class IdentifierToken(Token):
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return f"<Token: Identifier> {self.name}"
 
 
 class TokenGroup(Token):
     def __init__(self, token_list = []):
         self.token_list = token_list
-        self.operative, self.nested = get_token_list_attributes(token_list)
+        self.operative, self.nested = self.get_attributes()
 
     def __len__(self):
         return len(self.token_list)
@@ -93,13 +130,16 @@ class TokenGroup(Token):
         return self.token_list[key]
 
     def __str__(self, indent_level=0):
-        hash_signature = str(hash(self))
+        hash_signature = hash(self)
         indent_padding = indent_level * '\t'
 
         group_string = f"{indent_padding}<Token: GRP -- {hash_signature}"
 
-        if self.operative: group_string += " (operative)"
-        if self.nested: group_string += " (nested)"
+        if self.operative:
+            group_string += " (operative)"
+
+        if self.nested:
+            group_string += " (nested)"
 
         for token in self.token_list:
             if isinstance(token, TokenGroup):
@@ -112,57 +152,43 @@ class TokenGroup(Token):
 
         return group_string
 
+    def get_attributes(self):
+        operative = False
+        nested = False
 
-class IntegerToken(ValueToken):
-    def __init__(self, value):
-        super().__init__(int(value))
+        for token in self.token_list:
+            if isinstance(token, OperatorToken):
+                operative = True
+            elif isinstance(token, TokenGroup):
+                nested = True
 
-    def __str__(self):
-        return f"<Token: INT> {self.value}"
+            if operative and nested:
+                break
 
-
-class OperatorAddToken(OperatorToken):
-    def __init__(self):
-        super().__init__('+')
-
-
-class OperatorSubToken(OperatorToken):
-    def __init__(self):
-        super().__init__('-')
+        return operative, nested
 
 
-class OperatorMulToken(OperatorToken):
-    def __init__(self):
-        super().__init__('*')
-
-
-class OperatorDivToken(OperatorToken):
-    def __init__(self):
-        super().__init__('/')
-
-
-class OperatorModToken(OperatorToken):
-    def __init__(self):
-        super().__init__('%')
-
-
-class OperatorAssignToken(OperatorToken):
-    def __init__(self):
-        super().__init__('=')
 
 
 
 class Expression:
+    def __str__(self):
+        return "<Expression: Null>"
+
     def evaluate(self):
         return None
 
 
 class ValueExpression(Expression):
     def __init__(self, value_token):
-        self.value_token = value_token
+        self.value = value_token.value
+        self.type = value_token.type
+
+    def __str__(self):
+        return f"<Expression: Value> ({str(self.type)}) {self.value}"
 
     def evaluate(self):
-        return self.value_token.value
+        return self.value
 
 
 class OperationExpression(Expression):
@@ -170,75 +196,107 @@ class OperationExpression(Expression):
         self.left = left
         self.right = right
 
+    def __str__(self):
+        return f"<Expression: Operation> [None]"
+
+
+class IdentifierExpression(Expression):
+    def __init__(self, identifier_token):
+        self.name = identifier_token.name
+
+    def __str__(self):
+        return f"<Expression: Identififer> {self.name}"
+
+    def evaluate(self):
+        return variable_bank[self.name]
+
 
 class OperationAddExpression(OperationExpression):
     def evaluate(self):
-        left_value = self.left.evaluate()
-        right_value = self.right.evaluate()
+        left_term = self.left.evaluate()
+        right_term = self.right.evaluate()
 
-        if right_value == None:
+        if right_term is None:
             raise ValueAbsentError
 
-        if left_value == None:
-            left_value = 0
+        if left_term is None:
+            left_term = 0
 
-        return left_value + right_value
+        return left_term + right_term
 
 
 class OperationSubExpression(OperationExpression):
     def evaluate(self):
-        left_value = self.left.evaluate()
-        right_value = self.right.evaluate()
+        left_term = self.left.evaluate()
+        right_term = self.right.evaluate()
 
-        if right_value == None:
+        if right_term is None:
             raise ValueAbsentError
 
-        if left_value == None:
-            left_value = 0
+        if left_term is None:
+            left_term = 0
 
-        return left_value - right_value
+        return left_term - right_term
 
 
 class OperationMulExpression(OperationExpression):
     def evaluate(self):
-        left_value = self.left.evaluate()
-        right_value = self.right.evaluate()
+        left_factor = self.left.evaluate()
+        right_factor = self.right.evaluate()
 
-        if left_value == None or right_value == None:
+        if left_factor is None or right_factor is None:
             raise ValueAbsentError
 
-        return left_value * right_value
+        return left_factor * right_factor
 
 
 class OperationDivExpression(OperationExpression):
     def evaluate(self):
-        left_value = self.left.evaluate()
-        right_value = self.right.evaluate()
+        dividend = self.left.evaluate()
+        divisor = self.right.evaluate()
 
-        if left_value == None or right_value == None:
+        if dividend is None or divisor is None:
             raise ValueAbsentError
 
-        if right_value == 0:
+        if divisor == 0:
             raise ZeroDivisionError
 
-        return left_value // right_value
+        return dividend // divisor
 
 
 class OperationModExpression(OperationExpression):
     def evaluate(self):
-        left_value = self.left.evaluate()
-        right_value = self.right.evaluate()
+        dividend = self.left.evaluate()
+        divisor = self.right.evaluate()
 
-        if left_value == None or right_value == None:
+        if dividend is None or divisor is None:
             raise ValueAbsentError
 
-        if not isinstance(left_value, int) or not isinstance(right_value, int):
+        if not isinstance(dividend, int) or not isinstance(divisor, int):
             raise TypeError
 
-        if right_value == 0:
+        if divisor == 0:
             raise ZeroDivisionError
 
-        return left_value % right_value
+        return dividend % divisor
+
+
+class OperationAssignExpression(OperationExpression):
+    def evaluate(self):
+        if not isinstance(self.left, IdentifierExpression):
+            raise TypeError
+
+        value = self.right.evaluate()
+
+        if value is None:
+            raise ValueAbsentError
+
+        if not isinstance(value, (int, str)):
+            raise TypeError
+
+        variable_bank[self.left.identifier_token.name] = value
+
+        return None
 
 
 
@@ -249,41 +307,40 @@ def get_next_operator_index(token_group):
 
     index = len(token_group) - 1
     for token in list(reversed(token_group.token_list)):
-        if isinstance(token, OperatorToken) and \
-                token.precedence < operator_precedence:
+        if (isinstance(token, OperatorToken) and
+                token.precedence < operator_precedence):
             operator_index = index
             operator_precedence = token.precedence
 
-            if token.precedence == SMALLEST_PRECEDENCE: break
+            if token.precedence == SMALLEST_PRECEDENCE:
+                break
 
         index -= 1
 
     return operator_index
 
 
-def get_token_list_attributes(token_list):
-    operative = False
-    nested = False
+def match_extraction(str, matching_group, starting_index=0):
+    if starting_index == len(str) - 1:
+        return str[starting_index], starting_index
 
-    for token in token_list:
-        if isinstance(token, OperatorToken): operative = True
-        elif isinstance(token, TokenGroup): nested = True
+    ending_index = starting_index
 
-        if operative and nested: break
+    for character in str[starting_index + 1 :]:
+        if character not in matching_group:
+            break
 
-    return operative, nested
+        ending_index += 1
+
+    return str[starting_index : ending_index + 1], ending_index
 
 
 def extract_integer(expression, starting_index):
-    number_string = expression[starting_index]
+    return match_extraction(expression, string.digits, starting_index)
 
-    if starting_index < len(expression) - 1:
-        for character in expression[starting_index + 1 :]:
-            if character not in DIGITS: break
 
-            number_string += character
-
-    return number_string
+def extract_identifier(expression, starting_index):
+    return match_extraction(expression, IDENTIFIER_CHARACTERS, starting_index)
 
 
 def extract_group(expression, opening_index):
@@ -301,7 +358,7 @@ def extract_group(expression, opening_index):
         if closing_index == len(expression) - 1:
             raise UnmatchedParenthesesError(opening_index)
 
-        for _i in range(subgroup_count):
+        for _ in range(subgroup_count):
             closing_index = expression.find(')', closing_index + 1)
 
         if closing_index == -1:
@@ -313,16 +370,18 @@ def extract_group(expression, opening_index):
 
 
 def get_operation_expression_type(operator_token):
-    if isinstance(operator_token, OperatorAddToken):
+    if isinstance(operator_token, AddOperatorToken):
         return OperationAddExpression
-    elif isinstance(operator_token, OperatorSubToken):
+    elif isinstance(operator_token, SubOperatorToken):
         return OperationSubExpression
-    elif isinstance(operator_token, OperatorMulToken):
+    elif isinstance(operator_token, MulOperatorToken):
         return OperationMulExpression
-    elif isinstance(operator_token, OperatorDivToken):
+    elif isinstance(operator_token, DivOperatorToken):
         return OperationDivExpression
-    elif isinstance(operator_token, OperatorModToken):
+    elif isinstance(operator_token, ModOperatorToken):
         return OperationModExpression
+    elif isinstance(operator_token, AssignOperatorToken):
+        return OperationAssignExpression
     else:
         raise UnexpectedError
 
@@ -333,27 +392,29 @@ def tokenize(expression):
 
     index = 0
     while index < len(expression):
-        if expression[index] in DIGITS:
-            number_string = extract_integer(expression, index)
-            index += len(number_string) - 1
-            token_list.append(IntegerToken(number_string))
+        if expression[index] in string.digits:
+            number_str, index = extract_integer(expression, index)
+            token_list.append(IntegerValueToken(number_str))
+        elif expression[index] in IDENTIFIER_BEGIN_CHARACTERS:
+            identifier_str, index = extract_identifier(expression, index)
+            token_list.append(IdentifierToken(identifier_str))
         else:
             match expression[index]:
                 case '(':
                     token_group, index = extract_group(expression, index)
                     token_list.append(token_group)
                 case '+':
-                    token_list.append(OperatorAddToken())
+                    token_list.append(AddOperatorToken())
                 case '-':
-                    token_list.append(OperatorSubToken())
+                    token_list.append(SubOperatorToken())
                 case '*':
-                    token_list.append(OperatorMulToken())
+                    token_list.append(MulOperatorToken())
                 case '/':
-                    token_list.append(OperatorDivToken())
+                    token_list.append(DivOperatorToken())
                 case '%':
-                    token_list.append(OperatorModToken())
+                    token_list.append(ModOperatorToken())
                 case '=':
-                    token_list.append(OperatorAssignToken())
+                    token_list.append(AssignOperatorToken())
                 case _:
                     raise InvalidSymbolError(expression[index])
 
@@ -367,7 +428,8 @@ def parse_group(token):
         return Expression()
 
     if not token.operative:
-        if len(token) > 1: raise OperatorAbsentError
+        if len(token) > 1:
+            raise OperatorAbsentError
 
         return parse(token.token_list[0])
 
@@ -387,6 +449,8 @@ def parse(token):
         return ValueExpression(token)
     elif isinstance(token, OperatorToken):
         return get_operation_expression_type(token)()
+    elif isinstance(token, IdentifierToken):
+        return IdentifierExpression(token)
     elif isinstance(token, TokenGroup):
         return parse_group(token)
     else:
@@ -402,8 +466,28 @@ def evaluate(input_expression):
 
 
 def main():
-    input_expression = input("ProjectOr expression: ")
-    print(f"ProjectOr result: {evaluate(input_expression)}")
+    if len(sys.argv) > 1:
+        for argument in sys.argv[1 :]:
+            for input_expression in argument.replace(' ', '').split(';'):
+                result = evaluate(input_expression)
+
+                if result:
+                    print(result)
+        return
+
+    while True:
+        input_expression = input("> ")
+
+        if input_expression == "stop":
+            break
+
+        try:
+            result = evaluate(input_expression)
+
+            if result:
+                print(f">>> {result}")
+        except Exception as ex:
+            print(ex)
 
 
 
