@@ -1,5 +1,3 @@
-import sys
-
 import projector.constants as constants
 import projector.error as error
 import projector.expression as expression
@@ -176,14 +174,3 @@ def evaluate(raw_expression):
     token_list = tokenize(raw_expression)
     expression_tree = parse(token.TokenGroup(token_list))
     return execute(expression_tree)
-
-
-
-def main():
-    pass
-
-
-
-
-if __name__ == "__main__":
-    main()
