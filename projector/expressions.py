@@ -3,6 +3,11 @@ import projector.exceptions as exceptions
 
 
 
+_variable_bank = {}
+
+
+
+
 class Expression:
     def __init__(self):
         self._signature_expression_type = "Null"
@@ -223,10 +228,15 @@ class AssignmentOperationExpression(OperationExpression):
         self._context_operation_type = "assignment"
         self._signature_operation_type = "Assignment"
 
-    def evaluate(self, variable_bank):
+    def evaluate(self):
         value = self.right.evaluate()
 
-        variable_bank[self.left.name] = value
+        if not isinstance(self.left, IdentifierExpression):
+            raise exceptions.ProjectorTypeError(
+                self.context(), str(type(self.left))
+            )
+
+        _variable_bank[self.left.name] = value
 
         return None
 
@@ -245,8 +255,8 @@ class IdentifierExpression(Expression):
     def context(self):
         return "identifier resolution"
 
-    def evaluate(self, variable_bank):
-        if not variable_bank.defined(self.name):
+    def evaluate(self):
+        if not self.name in _variable_bank:
             raise exceptions.ProjectorUndefinedNameError(self.context(), self.name)
 
-        return variable_bank[self.name]
+        return _variable_bank[self.name]

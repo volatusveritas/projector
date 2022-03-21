@@ -2,7 +2,6 @@ import projector.constants as constants
 import projector.exceptions as exceptions
 import projector.expressions as expressions
 import projector.tokens as tokens
-import projector.varbank as varbank
 
 
 
@@ -184,17 +183,8 @@ def parse(token):
         return expressions.Expression()
 
 
-def execute(expression):
-    variable_bank = varbank.VariableBank()
-
-    if isinstance(expression, expressions.IdentifierExpression):
-        return expression.evaluate(variable_bank)
-    else:
-        return expression.evaluate()
-
-
 def evaluate(raw_expression):
     raw_expression = "".join(raw_expression.split())
     token_list = tokenize(raw_expression)
     expression_tree = parse(tokens.TokenGroup(token_list))
-    return execute(expression_tree)
+    return expression_tree.evaluate()
