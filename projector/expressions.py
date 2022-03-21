@@ -1,4 +1,4 @@
-import projector.error as error
+import projector.exceptions as exceptions
 
 
 
@@ -101,12 +101,12 @@ class AdditionOperationExpression(OperationExpression):
             left_term = 0
 
         if not isinstance(left_term, (int, float)):
-            raise error.ProjectorTypeError(
+            raise exceptions.ProjectorTypeError(
                 self.context(), str(type(left_term)), " in left term"
             )
 
         if not isinstance(right_term, (int, float)):
-            raise error.ProjectorTypeError(
+            raise exceptions.ProjectorTypeError(
                 self.context(), str(type(right_term)), " in right term"
             )
 
@@ -128,12 +128,12 @@ class SubtractionOperationExpression(OperationExpression):
             left_term = 0
 
         if not isinstance(left_term, (int, float)):
-            raise error.ProjectorTypeError(
+            raise exceptions.ProjectorTypeError(
                 self.context(), str(type(left_term)), " in left term"
             )
 
         if not isinstance(right_term, (int, float)):
-            raise error.ProjectorTypeError(
+            raise exceptions.ProjectorTypeError(
                 self.context(), str(type(right_term)), " in right term"
             )
 
@@ -152,12 +152,12 @@ class MultiplicationOperationExpression(OperationExpression):
         right_factor = self.right.evaluate()
 
         if not isinstance(left_factor, (int, float)):
-            raise error.ProjectorTypeError(
+            raise exceptions.ProjectorTypeError(
                 self.context(), str(type(left_factor)), " in left factor"
             )
 
         if not isinstance(right_factor, (int, float)):
-            raise error.ProjectorTypeError(
+            raise exceptions.ProjectorTypeError(
                 self.context(), str(type(right_factor)), " in right factor"
             )
 
@@ -176,16 +176,16 @@ class DivisionOperationExpression(OperationExpression):
         divisor = self.right.evaluate()
 
         if not isinstance(dividend, (int, float)):
-            raise error.ProjectorTypeError(
+            raise exceptions.ProjectorTypeError(
                 self.context(), str(type(dividend)), " in dividend"
             )
 
         if not isinstance(divisor, (int, float)):
-            raise error.ProjectorTypeError(
+            raise exceptions.ProjectorTypeError(
                 self.context(), str(type(divisor)), " in divisor"
             )
         elif not divisor:
-            raise error.ProjectorDivisionByZeroError(self.context())
+            raise exceptions.ProjectorDivisionByZeroError(self.context())
 
         return dividend // divisor
 
@@ -202,16 +202,16 @@ class ModuloOperationExpression(OperationExpression):
         divisor = self.right.evaluate()
 
         if not isinstance(dividend, (int, float)):
-            raise error.ProjectorTypeError(
+            raise exceptions.ProjectorTypeError(
                 self.context(), str(type(dividend)), " in dividend"
             )
 
         if not isinstance(divisor, (int, float)):
-            raise error.ProjectorTypeError(
+            raise exceptions.ProjectorTypeError(
                 self.context(), str(type(divisor)), " in divisor"
             )
         elif not divisor:
-            raise error.ProjectorDivisionByZeroError(self.context())
+            raise exceptions.ProjectorDivisionByZeroError(self.context())
 
         return dividend % divisor
 
@@ -247,6 +247,6 @@ class IdentifierExpression(Expression):
 
     def evaluate(self, variable_bank):
         if not variable_bank.defined(self.name):
-            raise error.ProjectorUndefinedNameError(self.context(), self.name)
+            raise exceptions.ProjectorUndefinedNameError(self.context(), self.name)
 
         return variable_bank[self.name]

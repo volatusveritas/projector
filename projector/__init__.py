@@ -1,7 +1,7 @@
 import projector.constants as constants
-import projector.error as error
-import projector.expression as expression
-import projector.token as token
+import projector.exceptions as exceptions
+import projector.expressions as expressions
+import projector.tokens as tokens
 import projector.varbank as varbank
 
 
@@ -13,7 +13,7 @@ def get_next_operator_index(token_group):
 
     index = len(token_group) - 1
     for token in list(reversed(token_group)):
-        if (isinstance(token, token.OperatorToken) and
+        if (isinstance(token, tokens.OperatorToken) and
             token.precedence < operator_precedence
         ):
             operator_index = index
@@ -56,45 +56,45 @@ def extract_identifier(expression, starting_index):
 
 def extract_group(expression, opening_index):
     if opening_index == len(expression) - 1:
-        raise error.ProjectorUnmatchedParenthesesError
+        raise exceptions.ProjectorUnmatchedParenthesesError
 
     closing_index = expression.find(')', opening_index + 1)
 
     if closing_index == -1:
-        raise error.ProjectorUnmatchedParenthesesError
+        raise exceptions.ProjectorUnmatchedParenthesesError
 
     subgroup_count = expression.count('(', opening_index + 1, closing_index)
 
     if subgroup_count:
-        if closing_index <= len(expression) - subgroup_count:
-            raise error.ProjectorUnmatchedParenthesesError
+        if closing_index >= len(expression) - subgroup_count:
+            raise exceptions.ProjectorUnmatchedParenthesesError
 
         for _ in range(subgroup_count):
             closing_index = expression.find(')', closing_index + 1)
 
             if closing_index == -1:
-                raise error.ProjectorUnmatchedParenthesesError
+                raise exceptions.ProjectorUnmatchedParenthesesError
 
     token_list = tokenize(expression[opening_index + 1 : closing_index])
 
-    return token.TokenGroup(token_list), closing_index
+    return tokens.TokenGroup(token_list), closing_index
 
 
 def get_operator_expression_type(operator_token):
-    if isinstance(operator_token, token.AdditionOperatorToken):
-        return expression.AdditionOperationExpression
-    elif isinstance(operator_token, token.SubtractionOperatorToken):
-        return expression.SubtractionOperationExpression
-    elif isinstance(operator_token, token.MultiplicationOperatorToken):
-        return expression.MultiplicationOperationExpression
-    elif isinstance(operator_token, token.DivisionOperatorToken):
-        return expression.DivisionOperationExpression
-    elif isinstance(operator_token, token.ModuloOperatorToken):
-        return expression.ModuloOperationExpression
-    elif isinstance(operator_token, token.AssignmentOperatorToken):
-        return expression.AssignmentOperationExpression
+    if isinstance(operator_token, tokens.AdditionOperatorToken):
+        return expressions.AdditionOperationExpression
+    elif isinstance(operator_token, tokens.SubtractionOperatorToken):
+        return expressions.SubtractionOperationExpression
+    elif isinstance(operator_token, tokens.MultiplicationOperatorToken):
+        return expressions.MultiplicationOperationExpression
+    elif isinstance(operator_token, tokens.DivisionOperatorToken):
+        return expressions.DivisionOperationExpression
+    elif isinstance(operator_token, tokens.ModuloOperatorToken):
+        return expressions.ModuloOperationExpression
+    elif isinstance(operator_token, tokens.AssignmentOperatorToken):
+        return expressions.AssignmentOperationExpression
     else:
-        return expression.OperationExpression
+        return expressions.OperationExpression
 
 
 
@@ -105,29 +105,29 @@ def tokenize(raw_expression):
     while index < len(raw_expression):
         if raw_expression[index] in constants.DECIMAL_NUMBER_CHARACTERS:
             number_str, index = extract_integer(raw_expression, index)
-            token_list.append(token.IntegerValueToken(int(number_str)))
+            token_list.append(tokens.IntegerValueToken(int(number_str)))
         elif raw_expression[index] in constants.IDENTIFIER_BEGIN_CHARACTERS:
             identifier_str, index = extract_identifier(raw_expression, index)
-            token_list.append(token.IdentifierToken(identifier_str))
+            token_list.append(tokens.IdentifierToken(identifier_str))
         else:
             match raw_expression[index]:
                 case '(':
                     token_group, index = extract_group(raw_expression, index)
                     token_list.append(token_group)
                 case '+':
-                    token_list.append(token.AdditionOperatorToken())
+                    token_list.append(tokens.AdditionOperatorToken())
                 case '-':
-                    token_list.append(token.SubtractionOperatorToken())
+                    token_list.append(tokens.SubtractionOperatorToken())
                 case '*':
-                    token_list.append(token.MultiplicationOperatorToken())
+                    token_list.append(tokens.MultiplicationOperatorToken())
                 case '/':
-                    token_list.append(token.DivisionOperatorToken())
+                    token_list.append(tokens.DivisionOperatorToken())
                 case '%':
-                    token_list.append(token.ModuloOperatorToken())
+                    token_list.append(tokens.ModuloOperatorToken())
                 case '=':
-                    token_list.append(token.AssignmentOperatorToken())
+                    token_list.append(tokens.AssignmentOperatorToken())
                 case _:
-                    raise error.ProjectorInvalidSymbolError(
+                    raise exceptions.ProjectorInvalidSymbolError(
                         raw_expression[index]
                     )
 
@@ -138,27 +138,27 @@ def tokenize(raw_expression):
 
 
 def parse_value(value_token):
-    if isinstance(value_token, value_token.IntegerValueToken):
-        return expression.IntegerValueExpression(value_token)
-    elif isinstance(value_token, value_token.FloatValueToken):
-        return expression.FloatValueExpression(value_token)
-    elif isinstance(value_token, value_token.StringValueToken):
-        return expression.StringValueExpression(value_token)
-    elif isinstance(value_token, value_token.BoolValueToken):
-        return expression.BoolValueExpression(value_token)
+    if isinstance(value_token, tokens.IntegerValueToken):
+        return expressions.IntegerValueExpression(value_token)
+    elif isinstance(value_token, tokens.FloatValueToken):
+        return expressions.FloatValueExpression(value_token)
+    elif isinstance(value_token, tokens.StringValueToken):
+        return expressions.StringValueExpression(value_token)
+    elif isinstance(value_token, tokens.BoolValueToken):
+        return expressions.BoolValueExpression(value_token)
     else:
-        return expression.ValueExpression(value_token)
+        return expressions.ValueExpression(value_token)
 
 
 def parse_group(token_group):
     if not token_group:
-        return expression.Expression()
+        return expressions.Expression()
 
     if not token_group.operative:
         if len(token_group) > 1:
-            raise error.ProjectorOperatorAbsentError
+            raise exceptions.ProjectorOperatorAbsentError
 
-        return parse(token_group.token_list[0])
+        return parse(token_group[0])
 
     operator_index = get_next_operator_index(token_group)
 
@@ -166,28 +166,28 @@ def parse_group(token_group):
     right_tokens = token_group[operator_index + 1 :]
 
     return get_operator_expression_type(token_group[operator_index])(
-        parse_group(token.TokenGroup(left_tokens)),
-        parse_group(token.TokenGroup(right_tokens))
+        parse_group(tokens.TokenGroup(left_tokens)),
+        parse_group(tokens.TokenGroup(right_tokens))
     )
 
 
 def parse(token):
-    if isinstance(token, token.ValueToken):
+    if isinstance(token, tokens.ValueToken):
         return parse_value(token)
-    elif isinstance(token, token.OperatorToken):
+    elif isinstance(token, tokens.OperatorToken):
         return get_operator_expression_type(token)()
-    elif isinstance(token, token.IdentifierToken):
-        return expression.IdentifierExpression(token)
-    elif isinstance(token, token.TokenGroup):
+    elif isinstance(token, tokens.IdentifierToken):
+        return expressions.IdentifierExpression(token)
+    elif isinstance(token, tokens.TokenGroup):
         return parse_group(token)
     else:
-        return expression.Expression()
+        return expressions.Expression()
 
 
 def execute(expression):
     variable_bank = varbank.VariableBank()
 
-    if isinstance(expression, expression.IdentifierExpression):
+    if isinstance(expression, expressions.IdentifierExpression):
         return expression.evaluate(variable_bank)
     else:
         return expression.evaluate()
@@ -196,5 +196,5 @@ def execute(expression):
 def evaluate(raw_expression):
     raw_expression = "".join(raw_expression.split())
     token_list = tokenize(raw_expression)
-    expression_tree = parse(token.TokenGroup(token_list))
+    expression_tree = parse(tokens.TokenGroup(token_list))
     return execute(expression_tree)
