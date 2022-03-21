@@ -1,10 +1,10 @@
 import sys
 
-import projector_constants as constants
-import projector_error as error
-import projector_expression as expression
-import projector_token as token
-import projector_varbank as varbank
+import projector.constants as constants
+import projector.error as error
+import projector.expression as expression
+import projector.token as token
+import projector.varbank as varbank
 
 
 
