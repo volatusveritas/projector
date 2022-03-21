@@ -51,7 +51,7 @@ class BoolValueToken(ValueToken):
 
 
 class OperatorToken(Token):
-    def __init__(self, precedence):
+    def __init__(self, precedence=0):
         self._signature_token_type = "Operator"
         self._signature_operator_type = "None"
 
