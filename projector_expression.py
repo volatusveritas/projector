@@ -1,4 +1,4 @@
-import error
+import projector_error as error
 
 
 
@@ -87,8 +87,8 @@ class OperationExpression(Expression):
 
 
 class AdditionOperationExpression(OperationExpression):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, left=None, right=None):
+        super().__init__(left, right)
 
         self._context_operation_type = "addition"
         self._signature_operation_type = "Addition"
@@ -114,8 +114,8 @@ class AdditionOperationExpression(OperationExpression):
 
 
 class SubtractionOperationExpression(OperationExpression):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, left=None, right=None):
+        super().__init__(left, right)
 
         self._context_operation_type = "subtraction"
         self._signature_operation_type = "Subtraction"
@@ -141,8 +141,8 @@ class SubtractionOperationExpression(OperationExpression):
 
 
 class MultiplicationOperationExpression(OperationExpression):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, left=None, right=None):
+        super().__init__(left, right)
 
         self._context_operation_type = "multiplication"
         self._signature_operation_type = "Multiplication"
@@ -165,8 +165,8 @@ class MultiplicationOperationExpression(OperationExpression):
 
 
 class DivisionOperationExpression(OperationExpression):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, left=None, right=None):
+        super().__init__(left, right)
 
         self._context_operation_type = "division"
         self._signature_operation_type = "Division"
@@ -191,8 +191,8 @@ class DivisionOperationExpression(OperationExpression):
 
 
 class ModuloOperationExpression(OperationExpression):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, left=None, right=None):
+        super().__init__(left, right)
 
         self._context_operation_type = "modulo"
         self._signature_operation_type = "Modulo"
@@ -217,8 +217,8 @@ class ModuloOperationExpression(OperationExpression):
 
 
 class AssignmentOperationExpression(OperationExpression):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, left=None, right=None):
+        super().__init__(left, right)
 
         self._context_operation_type = "assignment"
         self._signature_operation_type = "Assignment"
