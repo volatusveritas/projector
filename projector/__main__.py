@@ -14,7 +14,10 @@ def start_file(filename):
     try:
         with open(filename) as file:
             for raw_expression in file.read().split(';'):
-                print(projector.evaluate(raw_expression))
+                result = projector.evaluate(raw_expression)
+
+                if result:
+                    print(result)
     except:
         print(f"Unable to open file '{filename}'")
 
@@ -25,7 +28,10 @@ def start_interactive():
 
 def start_expression(full_expression):
     for raw_expression in full_expression.split(';'):
-        print(projector.evaluate(raw_expression))
+        result = projector.evaluate(raw_expression)
+
+        if result:
+            print(result)
 
 
 
