@@ -1,28 +1,26 @@
-import enum
-import string
 import sys
 
-import constants
-import error
-import expression
-import token
-import variable_bank
+import projector_constants as constants
+import projector_error as error
+import projector_expression as expression
+import projector_token as token
+import projector_varbank as varbank
 
 
 
 
 def get_next_operator_index(token_group):
-    operator_precedence = BIGGEST_PRECEDENCE + 1
+    operator_precedence = constants.BIGGEST_PRECEDENCE + 1
     operator_index = -1
 
     index = len(token_group) - 1
-    for token in list(reversed(token_group.token_list)):
-        if (isinstance(token, OperatorToken) and
+    for token in list(reversed(token_group)):
+        if (isinstance(token, token.OperatorToken) and
                 token.precedence < operator_precedence):
             operator_index = index
             operator_precedence = token.precedence
 
-            if token.precedence == SMALLEST_PRECEDENCE:
+            if token.precedence == constants.SMALLEST_PRECEDENCE:
                 break
 
         index -= 1
@@ -67,19 +65,21 @@ def extract_group(expression, opening_index):
     return TokenGroup(token_list), closing_index
 
 
-def get_operation_expression_type(operator_token):
-    if isinstance(operator_token, AddOperatorToken):
-        return OperationAddExpression
-    elif isinstance(operator_token, SubOperatorToken):
-        return OperationSubExpression
-    elif isinstance(operator_token, MulOperatorToken):
-        return OperationMulExpression
-    elif isinstance(operator_token, DivOperatorToken):
-        return OperationDivExpression
-    elif isinstance(operator_token, ModOperatorToken):
-        return OperationModExpression
-    elif isinstance(operator_token, AssignOperatorToken):
-        return OperationAssignExpression
+def get_operator_expression_type(operator_token):
+    if isinstance(operator_token, token.AdditionOperatorToken):
+        return expression.AdditionOperationExpression
+    elif isinstance(operator_token, token.SubtractionOperatorToken):
+        return expression.SubtractionOperationExpression
+    elif isinstance(operator_token, token.MultiplicationOperatorToken):
+        return expression.MultiplicationOperationExpression
+    elif isinstance(operator_token, token.DivisionOperatorToken):
+        return expression.DivisionOperationExpression
+    elif isinstance(operator_token, token.ModuloOperatorToken):
+        return expression.ModuloOperationExpression
+    elif isinstance(operator_token, token.AssignmentOperatorToken):
+        return expression.AssignmentOperationExpression
+    else:
+        return expression.OperationExpression
 
 
 
@@ -118,66 +118,69 @@ def tokenize(raw_expression):
 
 
 
-def parse_group(token):
-    if not token:
-        return Expression()
+def parse_value(value_token):
+    if isinstance(value_token, value_token.IntegerValueToken):
+        return expression.IntegerValueExpression(value_token)
+    elif isinstance(value_token, value_token.FloatValueToken):
+        return expression.FloatValueExpression(value_token)
+    elif isinstance(value_token, value_token.StringValueToken):
+        return expression.StringValueExpression(value_token)
+    elif isinstance(value_token, value_token.BoolValueToken):
+        return expression.BoolValueExpression(value_token)
+    else:
+        return expression.ValueExpression(value_token)
 
-    if not token.operative:
-        return parse(token.token_list[0])
 
-    operator_index = get_next_operator_index(token)
+def parse_group(token_group):
+    if not token_group:
+        return expression.Expression()
 
-    left_tokens = token[: operator_index]
-    right_tokens = token[operator_index + 1 :]
+    if not token_group.operative:
+        return parse(token_group.token_list[0])
 
-    return get_operation_expression_type(token[operator_index])(
-        parse(TokenGroup(left_tokens)),
-        parse(TokenGroup(right_tokens))
+    operator_index = get_next_operator_index(token_group)
+
+    left_tokens = token_group[: operator_index]
+    right_tokens = token_group[operator_index + 1 :]
+
+    return get_operator_expression_type(token_group[operator_index])(
+        parse_group(token.TokenGroup(left_tokens)),
+        parse_group(token.TokenGroup(right_tokens))
     )
 
 
 def parse(token):
-    if isinstance(token, ValueToken):
-        return ValueExpression(token)
-    elif isinstance(token, OperatorToken):
-        return get_operation_expression_type(token)()
-    elif isinstance(token, IdentifierToken):
-        return IdentifierExpression(token)
-    elif isinstance(token, TokenGroup):
+    if isinstance(token, token.ValueToken):
+        return parse_value(token)
+    elif isinstance(token, token.OperatorToken):
+        return get_operator_expression_type(token)()
+    elif isinstance(token, token.IdentifierToken):
+        return expression.IdentifierExpression(token)
+    elif isinstance(token, token.TokenGroup):
         return parse_group(token)
+    else:
+        return expression.Expression()
 
 
-def evaluate(input_expression):
-    input_expression = input_expression.replace(' ', '')
-    token_list = tokenize(input_expression)
-    parsed_expression = parse(TokenGroup(token_list))
-    return parsed_expression.evaluate()
+def execute(expression):
+    variable_bank = varbank.VariableBank()
+
+    if isinstance(expression, expression.IdentifierExpression):
+        return expression.evaluate(variable_bank)
+    else:
+        return expression.evaluate()
+
+
+def evaluate(raw_expression):
+    raw_expression = "".join(raw_expression.split())
+    token_list = tokenize(raw_expression)
+    expression_tree = parse(token.TokenGroup(token_list))
+    return execute(expression_tree)
 
 
 
 def main():
-    if len(sys.argv) > 1:
-        for argument in sys.argv[1 :]:
-            for input_expression in argument.replace(' ', '').split(';'):
-                result = evaluate(input_expression)
-
-                if result:
-                    print(result)
-        return
-
-    while True:
-        input_expression = input("> ")
-
-        if input_expression == "stop":
-            break
-
-        try:
-            result = evaluate(input_expression)
-
-            if result:
-                print(f">>> {result}")
-        except Exception as ex:
-            print(ex)
+    pass
 
 
 
