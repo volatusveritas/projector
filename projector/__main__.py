@@ -19,7 +19,7 @@ def start_file(filename):
                 if result:
                     print(result)
     except:
-        print(f"Unable to open file '{filename}'")
+        print(f"[ProjecOr] Unable to open file '{filename}'")
 
 
 def start_interactive():
@@ -48,12 +48,12 @@ else:
         projector_help()
     elif argv[0] in ["-e", "--expression"]:
         if not len(argv) > 1:
-            print("Missing argument: expression")
+            print("[ProjectOr] Missing argument: expression")
 
         start_expression(argv[1])
     elif argv[0] in ["-f", "--file"]:
         if not len(argv) > 1:
-            print("Missing argument: file")
+            print("[ProjectOr] Missing argument: file")
 
         start_file(argv[1])
     else:
