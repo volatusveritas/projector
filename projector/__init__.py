@@ -42,11 +42,15 @@ def match_extraction(str, matching_group, starting_index=0):
 
 
 def extract_integer(expression, starting_index):
-    return match_extraction(expression, string.digits, starting_index)
+    return match_extraction(
+        expression, constants.DECIMAL_NUMBER_CHARACTERS, starting_index
+    )
 
 
 def extract_identifier(expression, starting_index):
-    return match_extraction(expression, IDENTIFIER_CHARACTERS, starting_index)
+    return match_extraction(
+        expression, constants.IDENTIFIER_CHARACTERS, starting_index
+    )
 
 
 def extract_group(expression, opening_index):
@@ -60,7 +64,7 @@ def extract_group(expression, opening_index):
 
     token_list = tokenize(expression[opening_index + 1 : closing_index])
 
-    return TokenGroup(token_list), closing_index
+    return token.TokenGroup(token_list), closing_index
 
 
 def get_operator_expression_type(operator_token):
@@ -88,27 +92,27 @@ def tokenize(raw_expression):
     while index < len(raw_expression):
         if raw_expression[index] in constants.DECIMAL_NUMBER_CHARACTERS:
             number_str, index = extract_integer(raw_expression, index)
-            token_list.append(IntegerValueToken(number_str))
-        elif raw_expression[index] in IDENTIFIER_BEGIN_CHARACTERS:
+            token_list.append(token.IntegerValueToken(int(number_str)))
+        elif raw_expression[index] in constants.IDENTIFIER_BEGIN_CHARACTERS:
             identifier_str, index = extract_identifier(raw_expression, index)
-            token_list.append(IdentifierToken(identifier_str))
+            token_list.append(token.IdentifierToken(identifier_str))
         else:
             match raw_expression[index]:
                 case '(':
                     token_group, index = extract_group(raw_expression, index)
                     token_list.append(token_group)
                 case '+':
-                    token_list.append(AddOperatorToken())
+                    token_list.append(token.AdditionOperatorToken())
                 case '-':
-                    token_list.append(SubOperatorToken())
+                    token_list.append(token.SubtractionOperatorToken())
                 case '*':
-                    token_list.append(MulOperatorToken())
+                    token_list.append(token.MultiplicationOperatorToken())
                 case '/':
-                    token_list.append(DivOperatorToken())
+                    token_list.append(token.DivisionOperatorToken())
                 case '%':
-                    token_list.append(ModOperatorToken())
+                    token_list.append(token.ModuloOperatorToken())
                 case '=':
-                    token_list.append(AssignOperatorToken())
+                    token_list.append(token.AssignmentOperatorToken())
 
         index += 1
 
