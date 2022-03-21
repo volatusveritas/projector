@@ -129,6 +129,9 @@ class TokenGroup(Token):
     def __iter__(self):
         return iter(self._token_list)
 
+    def __bool__(self):
+        return bool(self._token_list)
+
     def __str__(self, indent_level=0):
         hash_signature = hash(self)
         indent_padding = indent_level * '\t'

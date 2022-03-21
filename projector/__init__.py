@@ -14,7 +14,8 @@ def get_next_operator_index(token_group):
     index = len(token_group) - 1
     for token in list(reversed(token_group)):
         if (isinstance(token, token.OperatorToken) and
-                token.precedence < operator_precedence):
+            token.precedence < operator_precedence
+        ):
             operator_index = index
             operator_precedence = token.precedence
 
@@ -54,13 +55,25 @@ def extract_identifier(expression, starting_index):
 
 
 def extract_group(expression, opening_index):
+    if opening_index == len(expression) - 1:
+        raise error.ProjectorUnmatchedParenthesesError
+
     closing_index = expression.find(')', opening_index + 1)
+
+    if closing_index == -1:
+        raise error.ProjectorUnmatchedParenthesesError
 
     subgroup_count = expression.count('(', opening_index + 1, closing_index)
 
     if subgroup_count:
+        if closing_index <= len(expression) - subgroup_count:
+            raise error.ProjectorUnmatchedParenthesesError
+
         for _ in range(subgroup_count):
             closing_index = expression.find(')', closing_index + 1)
+
+            if closing_index == -1:
+                raise error.ProjectorUnmatchedParenthesesError
 
     token_list = tokenize(expression[opening_index + 1 : closing_index])
 
@@ -113,6 +126,10 @@ def tokenize(raw_expression):
                     token_list.append(token.ModuloOperatorToken())
                 case '=':
                     token_list.append(token.AssignmentOperatorToken())
+                case _:
+                    raise error.ProjectorInvalidSymbolError(
+                        raw_expression[index]
+                    )
 
         index += 1
 
@@ -138,6 +155,9 @@ def parse_group(token_group):
         return expression.Expression()
 
     if not token_group.operative:
+        if len(token_group) > 1:
+            raise error.ProjectorOperatorAbsentError
+
         return parse(token_group.token_list[0])
 
     operator_index = get_next_operator_index(token_group)
