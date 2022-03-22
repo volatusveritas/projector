@@ -13,7 +13,7 @@ cultivated through this project is about as small as meaningless, I have plans
 to port most of it to C in order to greatly improve performance.
 
 > **Streamer Note**: a lot of the production process and work being done on the
-language will be streamed at Twitch in [my
+language will be streamed at [my Twitch
 channel](https://twitch.tv/veritasvolatus). I do plan on sharing progress at
 Twitter as well, although I'm not very fond of it. A seemingly better idea is
 to make a YouTube series out of it (once I've decided on it the links for
