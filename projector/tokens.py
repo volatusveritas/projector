@@ -109,10 +109,12 @@ class AssignmentOperatorToken(OperatorToken):
 
 class IdentifierToken(Token):
     def __init__(self, name):
+        self._signature_token_type = "Identifier"
+
         self.name = name
 
     def __str__(self):
-        return f"<Token: Identifier> {self.name}"
+        return f"{str(super())} {self.name}"
 
 
 class TokenGroup(Token):
