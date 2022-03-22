@@ -13,7 +13,7 @@ class Expression:
         self._signature_expression_type = "Null"
 
     def __str__(self):
-        return f"<Token: Expression> ({self._signature_expression_type})"
+        return f"<Expression: {self._signature_expression_type}>"
 
     def context(self):
         return "<undetermined execution point>"
