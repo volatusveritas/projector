@@ -1,16 +1,19 @@
+from projector import constants
+
+
 class ProjectorError(Exception):
     def __str__(self):
         return "Unknown error"
 
 
 class ProjectorTypeError(ProjectorError):
-    def __str__(self):
-        return "Invalid type"
+    def __str__(self, type=constants.ABSENT_SYMBOL_NAME):
+        return f"Invalid type '{type}'"
 
 
 class ProjectorValueError(ProjectorError):
-    def __str__(self):
-        return "Invalid value"
+    def __str__(self, value=constants.ABSENT_SYMBOL_NAME):
+        return f"Invalid value '{value}'"
 
 
 class ProjectorDivisionByZeroError(ProjectorError):
@@ -19,8 +22,8 @@ class ProjectorDivisionByZeroError(ProjectorError):
 
 
 class ProjectorUndefinedNameError(ProjectorError):
-    def __str__(self):
-        return "Undefined name"
+    def __str__(self, name=constants.ABSENT_SYMBOL_NAME):
+        return f"Undefined name '{name}'"
 
 
 class ProjectorOperatorAbsentError(ProjectorError):
@@ -34,5 +37,15 @@ class ProjectorUnmatchedParenthesesError(ProjectorError):
 
 
 class ProjectorInvalidSymbolError(ProjectorError):
-    def __str__(self):
-        return "Invalid symbol"
+    def __str__(self, symbol=constants.ABSENT_SYMBOL_NAME):
+        return f"Invalid symbol '{symbol}'"
+
+
+class ProjectorMissingInitArgError(ProjectorError):
+    def __str__(self, argument=constants.ABSENT_SYMBOL_NAME):
+        return f"Missing initialization argument '{argument}'"
+
+
+class ProjectorCantOpenFileError(ProjectorError):
+    def __str__(self, file=constants.ABSENT_SYMBOL_NAME):
+        return f"Unable to open file '{file}'"
