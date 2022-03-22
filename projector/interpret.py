@@ -1,7 +1,7 @@
-import projector.constants as constants
-import projector.exceptions as exceptions
-import projector.expressions as expressions
-import projector.tokens as tokens
+from projector import constants
+from projector import exceptions
+from projector import expressions
+from projector import tokens
 
 
 
