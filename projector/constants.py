@@ -16,3 +16,5 @@ DECIMAL_NUMBER_CHARACTERS = digits
 
 ABSENT_SYMBOL_NAME = "<unknown>"
 
+NUMERICAL_TYPES = (int, float)
+
