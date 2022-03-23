@@ -1,12 +1,25 @@
 from sys import argv
 
-import projector
+from projector import exceptions
+from projector import interpret
+from projector import meta
 
 
 
 
 def projector_help():
-    pass
+    print(
+        "Usage: python -m [pyoptions] projector [initmethod]\n"
+        "\nPyOptions: any number of Python options\n"
+        "\nInitMethods:\n"
+        "  -h, --help  show this help message and exit\n"
+        "  [-f, --file] <file>  execute the contents of <file>\n"
+        "  [-i, --interactive]  start interactive mode\n"
+        "  -e, --expression <expressions>  execute <expressions>\n"
+        "\nIf no initmethod is given, interactive mode is assumed"
+    )
+
+    exit()
 
 
 
@@ -14,47 +27,71 @@ def start_file(filename):
     try:
         with open(filename) as file:
             for raw_expression in file.read().split(';'):
-                result = projector.evaluate(raw_expression)
+                result = interpret.evaluate(raw_expression)
 
                 if result:
                     print(result)
     except:
-        print(f"[ProjecOr] Unable to open file '{filename}'")
+        raise exceptions.ProjectorCantOpenFileError(filename)
+
+    exit()
 
 
 def start_interactive():
-    pass
+    print(f"ProjectOr v{meta.VERSION}, {meta.RELEASE_YEAR}.")
+    print("Entering interactive mode. Type 'quit' to stop.")
+
+    while True:
+        raw_input = input(">>> ")
+
+        if raw_input == "quit":
+            break
+
+        for raw_expression in raw_input.split(';'):
+            result = interpret.evaluate(raw_expression)
+
+            if result:
+                print(result)
+
+    exit()
 
 
 def start_expression(full_expression):
     for raw_expression in full_expression.split(';'):
-        result = projector.evaluate(raw_expression)
+        result = interpret.evaluate(raw_expression)
 
         if result:
             print(result)
 
+    exit()
 
 
 
-# Ignore program name
-del argv[0]
+def consume_argument():
+    match argv[0]:
+        case "-i" | "--interactive":
+            start_interactive()
+        case "-h" | "--help":
+            projector_help()
+        case "-e" | "--expression":
+            if not len(argv) > 1:
+                raise exceptions.ProjectorMissingInitArgError("expression")
+
+            start_expression(argv[1])
+        case "-f" | "--file":
+            if not len(argv) > 1:
+                raise exceptions.ProjectorMissingInitArgError("file")
+
+            start_file(argv[1])
+        case _:
+            start_file(argv[0])
+
+
+
+
+del argv[0]  # Ignore program name
 
 if not argv:
     start_interactive()
 else:
-    if argv[0] in ["-i", "--interactive"]:
-        start_interactive()
-    elif argv[0] in ["-h", "--help"]:
-        projector_help()
-    elif argv[0] in ["-e", "--expression"]:
-        if not len(argv) > 1:
-            print("[ProjectOr] Missing argument: expression")
-
-        start_expression(argv[1])
-    elif argv[0] in ["-f", "--file"]:
-        if not len(argv) > 1:
-            print("[ProjectOr] Missing argument: file")
-
-        start_file(argv[1])
-    else:
-        start_file(argv[0])
+    while argv: consume_argument()

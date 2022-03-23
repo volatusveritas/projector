@@ -1,3 +1,4 @@
+import projector.constants as constants
 import projector.exceptions as exceptions
 
 
@@ -72,6 +73,13 @@ class OperationExpression(Expression):
     def __str__(self):
         return f"{str(super())} [{self._signature_operation_type}]"
 
+    def validate_arguments(self, left, right):
+        if not isinstance(left, constants.NUMERICAL_TYPES):
+            raise exceptions.ProjectorTypeError(type(left))
+
+        if not isinstance(right, constants.NUMERICAL_TYPES):
+            raise exceptions.ProjectorTypeError(type(right))
+
     def evaluate(self):
         return (self.left, self.right)
 
@@ -89,11 +97,7 @@ class AdditionOperationExpression(OperationExpression):
         if left_term is None:
             left_term = 0
 
-        if not isinstance(left_term, (int, float)):
-            raise exceptions.ProjectorTypeError
-
-        if not isinstance(right_term, (int, float)):
-            raise exceptions.ProjectorTypeError
+        self.validate_arguments(left_term, right_term)
 
         return left_term + right_term
 
@@ -111,11 +115,7 @@ class SubtractionOperationExpression(OperationExpression):
         if left_term is None:
             left_term = 0
 
-        if not isinstance(left_term, (int, float)):
-            raise exceptions.ProjectorTypeError
-
-        if not isinstance(right_term, (int, float)):
-            raise exceptions.ProjectorTypeError
+        self.validate_arguments(left_term, right_term)
 
         return left_term - right_term
 
@@ -130,11 +130,7 @@ class MultiplicationOperationExpression(OperationExpression):
         left_factor = self.left.evaluate()
         right_factor = self.right.evaluate()
 
-        if not isinstance(left_factor, (int, float)):
-            raise exceptions.ProjectorTypeError
-
-        if not isinstance(right_factor, (int, float)):
-            raise exceptions.ProjectorTypeError
+        self.validate_arguments(left_factor, right_factor)
 
         return left_factor * right_factor
 
@@ -145,23 +141,22 @@ class DivisionOperationExpression(OperationExpression):
 
         self._signature_operation_type = "Division"
 
+    def validate_arguments(self, left, right):
+        super().validate_arguments(left, right)
+
+        if not right:
+            raise exceptions.ProjectorDivisionByZeroError
+
     def evaluate(self):
         dividend = self.left.evaluate()
         divisor = self.right.evaluate()
 
-        if not isinstance(dividend, (int, float)):
-            raise exceptions.ProjectorTypeError
-
-        if not isinstance(divisor, (int, float)):
-            raise exceptions.ProjectorTypeError
-
-        elif not divisor:
-            raise exceptions.ProjectorDivisionByZeroError
+        self.validate_arguments(dividend, divisor)
 
         return dividend // divisor
 
 
-class ModuloOperationExpression(OperationExpression):
+class ModuloOperationExpression(DivisionOperationExpression):
     def __init__(self, left=None, right=None):
         super().__init__(left, right)
 
@@ -171,14 +166,7 @@ class ModuloOperationExpression(OperationExpression):
         dividend = self.left.evaluate()
         divisor = self.right.evaluate()
 
-        if not isinstance(dividend, (int, float)):
-            raise exceptions.ProjectorTypeError
-
-        if not isinstance(divisor, (int, float)):
-            raise exceptions.ProjectorTypeError
-
-        elif not divisor:
-            raise exceptions.ProjectorDivisionByZeroError
+        self.validate_arguments(dividend, divisor)
 
         return dividend % divisor
 
@@ -189,11 +177,17 @@ class AssignmentOperationExpression(OperationExpression):
 
         self._signature_operation_type = "Assignment"
 
+    def validate_arguments(self, left, right):
+        if not isinstance(left, IdentifierExpression):
+            raise exceptions.ProjectorTypeError(type(left))
+
+        if not isinstance(right, constants.NUMERICAL_TYPES):
+            raise exceptions.ProjectorTypeError(type(left))
+
     def evaluate(self):
         value = self.right.evaluate()
 
-        if not isinstance(self.left, IdentifierExpression):
-            raise exceptions.ProjectorTypeError
+        self.validate_arguments(self.left, value)
 
         _variable_bank[self.left.name] = value
 
@@ -213,6 +207,6 @@ class IdentifierExpression(Expression):
 
     def evaluate(self):
         if not self.name in _variable_bank:
-            raise exceptions.ProjectorUndefinedNameError
+            raise exceptions.ProjectorUndefinedNameError(self.name)
 
         return _variable_bank[self.name]
