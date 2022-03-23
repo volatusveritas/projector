@@ -183,8 +183,14 @@ def parse(token):
         return expressions.Expression()
 
 
-def evaluate(raw_expression):
-    raw_expression = "".join(raw_expression.split())
-    token_list = tokenize(raw_expression)
-    expression_tree = parse(tokens.TokenGroup(token_list))
-    return expression_tree.evaluate()
+def evaluate(raw_expression, debug_mode=False):
+    try:
+        raw_expression = "".join(raw_expression.split())
+        token_list = tokenize(raw_expression)
+        expression_tree = parse(tokens.TokenGroup(token_list))
+        return expression_tree.evaluate()
+    except exceptions.ProjectorError as error:
+        if debug_mode:
+            raise error
+        
+        print(error)
