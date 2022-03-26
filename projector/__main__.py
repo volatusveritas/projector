@@ -9,14 +9,14 @@ from projector import meta
 
 def projector_help():
     print(
-        "Usage: python -m [pyoptions] projector [initmethod]\n"
-        "\nPyOptions: any number of Python options\n"
-        "\nInitMethods:\n"
-        "  -h, --help  show this help message and exit\n"
-        "  [-f, --file] <file>  execute the contents of <file>\n"
-        "  [-i, --interactive]  start interactive mode\n"
-        "  -e, --expression <expressions>  execute <expressions>\n"
-        "\nIf no initmethod is given, interactive mode is assumed"
+"Usage: python -m [pyoptions] projector [initmethod]\n"
+"\nPyOptions: any number of Python options\n"
+"\nInitMethods:\n"
+"  -h, --help  show this help message and exit\n"
+"  [-f, --file] <file>  execute the contents of <file>\n"
+"  [-i, --interactive]  start interactive mode\n"
+"  -e, --expression <expressions>  execute <expressions>\n"
+"\nIf no initmethod is given, interactive mode is assumed"
     )
 
     exit()
@@ -39,12 +39,12 @@ def start_file(filename):
 
 def start_interactive():
     print(f"ProjectOr v{meta.VERSION}, {meta.RELEASE_YEAR}.")
-    print("Entering interactive mode. Type 'quit' to stop.")
+    print("Entering interactive mode. Type 'quit', 'exit', or 'stop' to stop.")
 
     while True:
         raw_input = input(">>> ")
 
-        if raw_input == "quit":
+        if raw_input in ["quit", "stop", "exit"]:
             break
 
         for raw_expression in raw_input.split(';'):
