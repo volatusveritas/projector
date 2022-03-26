@@ -41,18 +41,6 @@ def match_extraction(str, matching_group, starting_index=0):
     return str[starting_index : ending_index + 1], ending_index
 
 
-def extract_integer(expression, starting_index):
-    return match_extraction(
-        expression, constants.DECIMAL_NUMBER_CHARACTERS, starting_index
-    )
-
-
-def extract_identifier(expression, starting_index):
-    return match_extraction(
-        expression, constants.WORD_CHARACTERS, starting_index
-    )
-
-
 def extract_group(expression, opening_index):
     if opening_index == len(expression) - 1:
         raise exceptions.ProjectorUnmatchedParenthesesError
@@ -80,44 +68,53 @@ def extract_group(expression, opening_index):
 
 
 
+def tokenize_unitoken(character):
+    match character:
+        case '+':
+            return tokens.AdditionOperatorToken()
+        case '-':
+            return tokens.SubtractionOperatorToken()
+        case '*':
+            return tokens.MultiplicationOperatorToken()
+        case '/':
+            return tokens.DivisionOperatorToken()
+        case '%':
+            return tokens.ModuloOperatorToken()
+        case '=':
+            return tokens.AssignmentOperatorToken()
+        case _:
+            raise exceptions.ProjectorInvalidSymbolError(character)
+
+
+def tokenize_word(word):
+    if word in constants.FLOWSTOP_KEYWORDS:
+        return tokens.BreakFlowToken()
+    else:
+        return tokens.IdentifierToken(word)
+
+
 def tokenize(raw_expression):
     token_list = []
 
     index = 0
     while index < len(raw_expression):
-        if raw_expression[index] in constants.DECIMAL_NUMBER_CHARACTERS:
-            number_str, index = extract_integer(raw_expression, index)
+        if raw_expression[index] == ' ':
+            pass
+        elif raw_expression[index] == '(':
+            token_group, index = extract_group(raw_expression, index)
+            token_list.append(token_group)
+        elif raw_expression[index] in constants.DECIMAL_NUMBER_CHARACTERS:
+            number_str, index = match_extraction(
+                raw_expression, constants.DECIMAL_NUMBER_CHARACTERS, index
+            )
             token_list.append(tokens.IntegerValueToken(int(number_str)))
         elif raw_expression[index] in constants.WORD_BEGIN_CHARACTERS:
-            word_str, index = extract_identifier(raw_expression, index)
-
-            if word_str in constants.FLOWSTOP_KEYWORDS:
-                token_list.append(tokens.BreakFlowToken())
-            else:
-                token_list.append(tokens.IdentifierToken(word_str))
+            word_str, index = match_extraction(
+                raw_expression, constants.WORD_CHARACTERS, index
+            )
+            token_list.append(tokenize_word(word_str))
         else:
-            match raw_expression[index]:
-                case ' ':
-                    pass
-                case '(':
-                    token_group, index = extract_group(raw_expression, index)
-                    token_list.append(token_group)
-                case '+':
-                    token_list.append(tokens.AdditionOperatorToken())
-                case '-':
-                    token_list.append(tokens.SubtractionOperatorToken())
-                case '*':
-                    token_list.append(tokens.MultiplicationOperatorToken())
-                case '/':
-                    token_list.append(tokens.DivisionOperatorToken())
-                case '%':
-                    token_list.append(tokens.ModuloOperatorToken())
-                case '=':
-                    token_list.append(tokens.AssignmentOperatorToken())
-                case _:
-                    raise exceptions.ProjectorInvalidSymbolError(
-                        raw_expression[index]
-                    )
+            token_list.append(tokenize_unitoken(raw_expression[index]))
 
         index += 1
 
@@ -140,7 +137,7 @@ def parse_group(token_group):
     left_tokens = token_group[: operator_index]
     right_tokens = token_group[operator_index + 1 :]
 
-    return token_group[operator_index].__getexpr__(
+    return token_group[operator_index].getexpr(
         parse_group(tokens.TokenGroup(left_tokens)),
         parse_group(tokens.TokenGroup(right_tokens))
     )
@@ -150,15 +147,14 @@ def parse(token):
     if isinstance(token, tokens.TokenGroup):
         return parse_group(token)
 
-    return token.__getexpr__()
+    return token.getexpr()
 
 
 def evaluate(raw_expression, debug_mode=False):
     try:
-        raw_expression = " ".join(raw_expression.split())
-        token_list = tokenize(raw_expression)
-        expression_tree = parse(tokens.TokenGroup(token_list))
-        return expression_tree.evaluate()
+        token_list = tokenize(" ".join(raw_expression.split()))
+        expression = parse(tokens.TokenGroup(token_list))
+        return expression.evaluate()
     except exceptions.ProjectorError as error:
         if debug_mode:
             raise error
