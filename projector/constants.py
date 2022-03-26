@@ -1,6 +1,7 @@
 from string import ascii_letters, digits
 
 
+# Operator Precedence
 SMALLEST_PRECEDENCE = 1
 ASSIGNMENT_PRECEDENCE = 1
 ADDITION_PRECEDENCE = 2
@@ -10,11 +11,15 @@ DIVISION_PRECEDENCE = 3
 MODULO_PRECEDENCE = 3
 BIGGEST_PRECEDENCE = 3
 
-IDENTIFIER_BEGIN_CHARACTERS = ascii_letters + '_'
-IDENTIFIER_CHARACTERS = IDENTIFIER_BEGIN_CHARACTERS + digits
+# Token Masks
+WORD_BEGIN_CHARACTERS = ascii_letters + '_'
+WORD_CHARACTERS = WORD_BEGIN_CHARACTERS + digits
 DECIMAL_NUMBER_CHARACTERS = digits
+FLOWSTOP_KEYWORDS = ["exit", "stop", "quit"]
 
+# Defaults
 ABSENT_SYMBOL_NAME = "<unknown>"
 
+# Typegroups
 NUMERICAL_TYPES = (int, float)
 

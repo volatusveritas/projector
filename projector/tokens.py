@@ -117,6 +117,22 @@ class IdentifierToken(Token):
         return f"{str(super())} {self.name}"
 
 
+class FlowToken(Token):
+    def __init__(self):
+        self._signature_token_type = "Flow"
+        self._signature_flow_type = "None"
+
+    def __str__(self):
+        return f"{str(super())} [{self._signature_flow_type}]"
+
+
+class BreakFlowToken(FlowToken):
+    def __init__(self):
+        super().__init__()
+
+        self._signature_flow_type = "Break"
+
+
 class TokenGroup(Token):
     def __init__(self, token_list=[]):
         self._token_list = token_list

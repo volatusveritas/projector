@@ -12,7 +12,7 @@
                 "stopOnEntry": true,
                 "console": "externalTerminal",
                 "debugOptions": [],
-                "program": "${file}"
+                "module": "projector"
             },
             "breakpoints": {
                 "exception": {

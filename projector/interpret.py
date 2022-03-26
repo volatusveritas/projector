@@ -49,7 +49,7 @@ def extract_integer(expression, starting_index):
 
 def extract_identifier(expression, starting_index):
     return match_extraction(
-        expression, constants.IDENTIFIER_CHARACTERS, starting_index
+        expression, constants.WORD_CHARACTERS, starting_index
     )
 
 
@@ -105,13 +105,17 @@ def tokenize(raw_expression):
         if raw_expression[index] in constants.DECIMAL_NUMBER_CHARACTERS:
             number_str, index = extract_integer(raw_expression, index)
             token_list.append(tokens.IntegerValueToken(int(number_str)))
-        elif raw_expression[index] in constants.IDENTIFIER_BEGIN_CHARACTERS:
-            identifier_str, index = extract_identifier(raw_expression, index)
-            token_list.append(tokens.IdentifierToken(identifier_str))
+        elif raw_expression[index] in constants.WORD_BEGIN_CHARACTERS:
+            word_str, index = extract_identifier(raw_expression, index)
+
+            if word_str in constants.FLOWSTOP_KEYWORDS:
+                token_list.append(tokens.BreakFlowToken())
+            else:
+                token_list.append(tokens.IdentifierToken(word_str))
         else:
             match raw_expression[index]:
                 case ' ':
-                    break
+                    pass
                 case '(':
                     token_group, index = extract_group(raw_expression, index)
                     token_list.append(token_group)
@@ -151,6 +155,10 @@ def parse_value(value_token):
         return expressions.ValueExpression(value_token)
 
 
+def parse_flow(flow_token):
+    return expressions.BreakFlowExpression()
+
+
 def parse_group(token_group):
     if not token_group:
         return expressions.Expression()
@@ -179,6 +187,8 @@ def parse(token):
         return get_operator_expression_type(token)()
     elif isinstance(token, tokens.IdentifierToken):
         return expressions.IdentifierExpression(token)
+    elif isinstance(token, tokens.FlowToken):
+        return parse_flow(token)
     elif isinstance(token, tokens.TokenGroup):
         return parse_group(token)
     else:

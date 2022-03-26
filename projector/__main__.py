@@ -1,4 +1,4 @@
-from sys import argv
+import sys
 
 from projector import exceptions
 from projector import interpret
@@ -19,7 +19,7 @@ def projector_help():
 "\nIf no initmethod is given, interactive mode is assumed"
     )
 
-    exit()
+    sys.exit()
 
 
 
@@ -34,26 +34,21 @@ def start_file(filename):
     except:
         raise exceptions.ProjectorCantOpenFileError(filename)
 
-    exit()
+    sys.exit()
 
 
 def start_interactive():
     print(f"ProjectOr v{meta.VERSION}, {meta.RELEASE_YEAR}.")
-    print("Entering interactive mode. Type 'quit', 'exit', or 'stop' to stop.")
+    print("Entering interactive mode. Type 'quit', 'exit', 'stop' to stop.")
 
     while True:
         raw_input = input(">>> ")
-
-        if raw_input in ["quit", "stop", "exit"]:
-            break
 
         for raw_expression in raw_input.split(';'):
             result = interpret.evaluate(raw_expression)
 
             if not result is None:
                 print(result)
-
-    exit()
 
 
 def start_expression(full_expression):
@@ -63,35 +58,35 @@ def start_expression(full_expression):
         if not result is None:
             print(result)
 
-    exit()
+    sys.exit()
 
 
 
 def consume_argument():
-    match argv[0]:
+    match sys.argv[0]:
         case "-i" | "--interactive":
             start_interactive()
         case "-h" | "--help":
             projector_help()
         case "-e" | "--expression":
-            if not len(argv) > 1:
+            if not len(sys.argv) > 1:
                 raise exceptions.ProjectorMissingInitArgError("expression")
 
-            start_expression(argv[1])
+            start_expression(sys.argv[1])
         case "-f" | "--file":
-            if not len(argv) > 1:
+            if not len(sys.argv) > 1:
                 raise exceptions.ProjectorMissingInitArgError("file")
 
-            start_file(argv[1])
+            start_file(sys.argv[1])
         case _:
-            start_file(argv[0])
+            start_file(sys.argv[0])
 
 
 
 
-del argv[0]  # Ignore program name
+del sys.argv[0]  # Ignore program name
 
-if not argv:
+if not sys.argv:
     start_interactive()
 else:
-    while argv: consume_argument()
+    while sys.argv: consume_argument()

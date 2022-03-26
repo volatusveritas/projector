@@ -1,3 +1,5 @@
+import sys
+
 import projector.constants as constants
 import projector.exceptions as exceptions
 
@@ -210,3 +212,22 @@ class IdentifierExpression(Expression):
             raise exceptions.ProjectorUndefinedNameError(self.name)
 
         return _variable_bank[self.name]
+
+
+class FlowExpression(Expression):
+    def __init__(self):
+        self._signature_expression_type = "Token"
+        self._signature_flow_type = "None"
+
+    def __str__(self):
+        return f"{str(super())} [{self._signature_flow_type}]"
+
+
+class BreakFlowExpression(FlowExpression):
+    def __init__(self):
+        super().__init__()
+
+        self._signature_flow_type = "Break"
+
+    def evaluate(self):
+        sys.exit()
