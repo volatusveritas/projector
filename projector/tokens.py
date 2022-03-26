@@ -1,4 +1,5 @@
-import projector.constants as constants
+from projector import constants
+from projector import expressions
 
 
 
@@ -9,6 +10,9 @@ class Token:
 
     def __str__(self):
         return f"<Token: {self._signature_token_type}>"
+
+    def __getexpr__(self):
+        return expressions.Expression()
 
 
 class ValueToken(Token):
@@ -21,12 +25,18 @@ class ValueToken(Token):
     def __str__(self):
         return f"{str(super())} ({self._signature_value_type}) {self.value}"
 
+    def __getexpr__(self):
+        return expressions.ValueExpression(self)
+
 
 class IntegerValueToken(ValueToken):
     def __init__(self, value):
         super().__init__(value)
 
         self._signature_value_type = "Integer"
+
+    def __getexpr__(self):
+        return expressions.IntegerValueExpression(self)
 
 
 class FloatValueToken(ValueToken):
@@ -35,6 +45,9 @@ class FloatValueToken(ValueToken):
 
         self._signature_value_type = "Float"
 
+    def __getexpr__(self):
+        return expressions.FloatValueExpression(self)
+
 
 class StringValueToken(ValueToken):
     def __init__(self, value):
@@ -42,12 +55,18 @@ class StringValueToken(ValueToken):
 
         self._signature_value_type = "String"
 
+    def __getexpr__(self):
+        return expressions.StringValueExpression(self)
+
 
 class BoolValueToken(ValueToken):
     def __init__(self, value):
         super().__init__(value)
 
         self._signature_value_type = "Bool"
+
+    def __getexpr__(self):
+        return expressions.BoolValueExpression(self)
 
 
 class OperatorToken(Token):
@@ -64,12 +83,18 @@ class OperatorToken(Token):
             f"P:{self.precedence}"
         )
 
+    def __getexpr__(self, left=None, right=None):
+        return expressions.OperationExpression(left, right)
+
 
 class AdditionOperatorToken(OperatorToken):
     def __init__(self):
         super().__init__(constants.ADDITION_PRECEDENCE)
 
         self._signature_operator_type = "Addition"
+
+    def __getexpr__(self, left=None, right=None):
+        return expressions.AdditionOperationExpression(left, right)
 
 
 class SubtractionOperatorToken(OperatorToken):
@@ -78,12 +103,18 @@ class SubtractionOperatorToken(OperatorToken):
 
         self._signature_operator_type = "Subtraction"
 
+    def __getexpr__(self, left=None, right=None):
+        return expressions.SubtractionOperationExpression(left, right)
+
 
 class MultiplicationOperatorToken(OperatorToken):
     def __init__(self):
         super().__init__(constants.MULTIPLICATION_PRECEDENCE)
 
         self._signature_operator_type = "Multiplication"
+
+    def __getexpr__(self, left=None, right=None):
+        return expressions.MultiplicationOperationExpression(left, right)
 
 
 class DivisionOperatorToken(OperatorToken):
@@ -92,6 +123,9 @@ class DivisionOperatorToken(OperatorToken):
 
         self._signature_operator_type = "Division"
 
+    def __getexpr__(self, left=None, right=None):
+        return expressions.DivisionOperationExpression(left, right)
+
 
 class ModuloOperatorToken(OperatorToken):
     def __init__(self):
@@ -99,12 +133,18 @@ class ModuloOperatorToken(OperatorToken):
 
         self._signature_operator_type = "Modulo"
 
+    def __getexpr__(self, left=None, right=None):
+        return expressions.ModuloOperationExpression(left, right)
+
 
 class AssignmentOperatorToken(OperatorToken):
     def __init__(self):
         super().__init__(constants.ASSIGNMENT_PRECEDENCE)
 
         self._signature_operator_type = "Assignment"
+
+    def __getexpr__(self, left=None, right=None):
+        return expressions.AssignmentOperationExpression(left, right)
 
 
 class IdentifierToken(Token):
@@ -116,6 +156,9 @@ class IdentifierToken(Token):
     def __str__(self):
         return f"{str(super())} {self.name}"
 
+    def __getexpr__(self):
+        return expressions.IdentifierExpression(self)
+
 
 class FlowToken(Token):
     def __init__(self):
@@ -125,12 +168,18 @@ class FlowToken(Token):
     def __str__(self):
         return f"{str(super())} [{self._signature_flow_type}]"
 
+    def __getexpr__(self):
+        return expressions.FlowExpression()
+
 
 class BreakFlowToken(FlowToken):
     def __init__(self):
         super().__init__()
 
         self._signature_flow_type = "Break"
+
+    def __getexpr__(self):
+        return expressions.BreakFlowExpression()
 
 
 class TokenGroup(Token):
