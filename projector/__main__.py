@@ -29,7 +29,7 @@ def start_file(filename):
             for raw_expression in file.read().split(';'):
                 result = interpret.evaluate(raw_expression)
 
-                if result:
+                if not result is None:
                     print(result)
     except:
         raise exceptions.ProjectorCantOpenFileError(filename)
@@ -50,7 +50,7 @@ def start_interactive():
         for raw_expression in raw_input.split(';'):
             result = interpret.evaluate(raw_expression)
 
-            if result:
+            if not result is None:
                 print(result)
 
     exit()
@@ -60,7 +60,7 @@ def start_expression(full_expression):
     for raw_expression in full_expression.split(';'):
         result = interpret.evaluate(raw_expression)
 
-        if result:
+        if not result is None:
             print(result)
 
     exit()
