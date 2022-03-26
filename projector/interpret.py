@@ -79,23 +79,6 @@ def extract_group(expression, opening_index):
     return tokens.TokenGroup(token_list), closing_index
 
 
-def get_operator_expression_type(operator_token):
-    if isinstance(operator_token, tokens.AdditionOperatorToken):
-        return expressions.AdditionOperationExpression
-    elif isinstance(operator_token, tokens.SubtractionOperatorToken):
-        return expressions.SubtractionOperationExpression
-    elif isinstance(operator_token, tokens.MultiplicationOperatorToken):
-        return expressions.MultiplicationOperationExpression
-    elif isinstance(operator_token, tokens.DivisionOperatorToken):
-        return expressions.DivisionOperationExpression
-    elif isinstance(operator_token, tokens.ModuloOperatorToken):
-        return expressions.ModuloOperationExpression
-    elif isinstance(operator_token, tokens.AssignmentOperatorToken):
-        return expressions.AssignmentOperationExpression
-    else:
-        return expressions.OperationExpression
-
-
 
 def tokenize(raw_expression):
     token_list = []
@@ -142,23 +125,6 @@ def tokenize(raw_expression):
 
 
 
-def parse_value(value_token):
-    if isinstance(value_token, tokens.IntegerValueToken):
-        return expressions.IntegerValueExpression(value_token)
-    elif isinstance(value_token, tokens.FloatValueToken):
-        return expressions.FloatValueExpression(value_token)
-    elif isinstance(value_token, tokens.StringValueToken):
-        return expressions.StringValueExpression(value_token)
-    elif isinstance(value_token, tokens.BoolValueToken):
-        return expressions.BoolValueExpression(value_token)
-    else:
-        return expressions.ValueExpression(value_token)
-
-
-def parse_flow(flow_token):
-    return expressions.BreakFlowExpression()
-
-
 def parse_group(token_group):
     if not token_group:
         return expressions.Expression()
@@ -174,25 +140,17 @@ def parse_group(token_group):
     left_tokens = token_group[: operator_index]
     right_tokens = token_group[operator_index + 1 :]
 
-    return get_operator_expression_type(token_group[operator_index])(
+    return token_group[operator_index].__getexpr__(
         parse_group(tokens.TokenGroup(left_tokens)),
         parse_group(tokens.TokenGroup(right_tokens))
     )
 
 
 def parse(token):
-    if isinstance(token, tokens.ValueToken):
-        return parse_value(token)
-    elif isinstance(token, tokens.OperatorToken):
-        return get_operator_expression_type(token)()
-    elif isinstance(token, tokens.IdentifierToken):
-        return expressions.IdentifierExpression(token)
-    elif isinstance(token, tokens.FlowToken):
-        return parse_flow(token)
-    elif isinstance(token, tokens.TokenGroup):
+    if isinstance(token, tokens.TokenGroup):
         return parse_group(token)
-    else:
-        return expressions.Expression()
+
+    return token.__getexpr__()
 
 
 def evaluate(raw_expression, debug_mode=False):
