@@ -110,6 +110,8 @@ def tokenize(raw_expression):
             token_list.append(tokens.IdentifierToken(identifier_str))
         else:
             match raw_expression[index]:
+                case ' ':
+                    break
                 case '(':
                     token_group, index = extract_group(raw_expression, index)
                     token_list.append(token_group)
@@ -185,12 +187,12 @@ def parse(token):
 
 def evaluate(raw_expression, debug_mode=False):
     try:
-        raw_expression = "".join(raw_expression.split())
+        raw_expression = " ".join(raw_expression.split())
         token_list = tokenize(raw_expression)
         expression_tree = parse(tokens.TokenGroup(token_list))
         return expression_tree.evaluate()
     except exceptions.ProjectorError as error:
         if debug_mode:
             raise error
-        
+
         print(error)
