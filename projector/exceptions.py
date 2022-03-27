@@ -45,6 +45,11 @@ class ProjectorUnmatchedParenthesesError(ProjectorError):
         return "Unmatched parentheses"
 
 
+class ProjectorUnmatchedQuotesError(ProjectorError):
+    def __str__(self):
+        return "Unmatched quotes"
+
+
 class ProjectorInvalidSymbolError(ProjectorError):
     def __init__(self, symbol=constants.ABSENT_SYMBOL_NAME):
         self.symbol = symbol

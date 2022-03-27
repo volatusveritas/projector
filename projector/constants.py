@@ -1,4 +1,6 @@
-from string import ascii_letters, digits
+from string import ascii_letters, digits, printable
+
+
 
 
 # Operator Precedence
@@ -12,6 +14,7 @@ MODULO_PRECEDENCE = 3
 BIGGEST_PRECEDENCE = 3
 
 # Token Masks
+WHITESPACE_CHARACTERS = " \f\n\r\t\v"
 WORD_BEGIN_CHARACTERS = ascii_letters + '_'
 WORD_CHARACTERS = WORD_BEGIN_CHARACTERS + digits
 DECIMAL_NUMBER_CHARACTERS = digits
@@ -22,4 +25,3 @@ ABSENT_SYMBOL_NAME = "<unknown>"
 
 # Typegroups
 NUMERICAL_TYPES = (int, float)
-

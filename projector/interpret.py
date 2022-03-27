@@ -41,6 +41,18 @@ def match_extraction(str, matching_group, starting_index=0):
     return str[starting_index : ending_index + 1], ending_index
 
 
+def extract_string(expression, opening_index):
+    if opening_index == len(expression) - 1:
+        raise exceptions.ProjectorUnmatchedQuotesError
+
+    closing_index = expression.find('"', opening_index + 1)
+
+    if closing_index == -1:
+        raise exceptions.ProjectorUnmatchedQuotesError
+
+    return expression[opening_index + 1 : closing_index], closing_index
+
+
 def extract_group(expression, opening_index):
     if opening_index == len(expression) - 1:
         raise exceptions.ProjectorUnmatchedParenthesesError
@@ -98,8 +110,11 @@ def tokenize(raw_expression):
 
     index = 0
     while index < len(raw_expression):
-        if raw_expression[index] == ' ':
+        if raw_expression[index] in constants.WHITESPACE_CHARACTERS:
             pass
+        elif raw_expression[index] == '"':
+            str_value, index = extract_string(raw_expression, index)
+            token_list.append(tokens.StringValueToken(str_value))
         elif raw_expression[index] == '(':
             token_group, index = extract_group(raw_expression, index)
             token_list.append(token_group)
@@ -152,7 +167,7 @@ def parse(token):
 
 def evaluate(raw_expression, debug_mode=False):
     try:
-        token_list = tokenize(" ".join(raw_expression.split()))
+        token_list = tokenize(raw_expression)
         expression = parse(tokens.TokenGroup(token_list))
         return expression.evaluate()
     except exceptions.ProjectorError as error:
