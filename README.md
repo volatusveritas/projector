@@ -30,3 +30,10 @@ Key functionality goals (an incomplete list):
 - [ ] Functions
 - [ ] Keyword Definitions
 - [ ] Aliases
+
+## Running ProjectOr
+
+The recommended way to run ProjectOr is `python -OO -S -m projector <options>`
+where `<options>` signifies ProjectOr's initialization options (initialize with
+`-h` or `--help` to learn more), although you can do without the `-OO -S`
+fragment if you wish.
