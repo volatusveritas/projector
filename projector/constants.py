@@ -1,4 +1,4 @@
-from string import ascii_letters, digits, printable
+from string import ascii_letters, digits
 
 
 
@@ -25,3 +25,4 @@ ABSENT_SYMBOL_NAME = "<unknown>"
 
 # Typegroups
 NUMERICAL_TYPES = (int, float)
+VALUE_TYPES = NUMERICAL_TYPES + (str,)

@@ -183,7 +183,7 @@ class AssignmentOperationExpression(OperationExpression):
         if not isinstance(left, IdentifierExpression):
             raise exceptions.ProjectorTypeError(type(left))
 
-        if not isinstance(right, constants.NUMERICAL_TYPES):
+        if not isinstance(right, constants.VALUE_TYPES):
             raise exceptions.ProjectorTypeError(type(right))
 
     def evaluate(self):
