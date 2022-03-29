@@ -3,24 +3,23 @@
 Welcome to the ProjectOr Development Journal (PDJ). This is the first entry on
 the journal, and it describes the purpose of these entries. They are all
 currently written by Volatus (whom you may know as Lucas B. M., or, if you're
-an old-timer, Religard). There is no current intention to make PDJ "open"
-(currently, no pull requests containing new PDJ entries or changes to existing
-entries will be accepted until such entries are removed from the forked
-branch).
+an old-timer, Religard). There is no intent to make PDJ "open" (no pull
+requests containing new PDJ entries or changes to existing entries will be
+accepted until such entries are removed from the forked branch).
 
 ## What is this?
 
 The ProjectOr Development Journal is a collection of entries related to the
 [ProjectOr Programming Language](https://github.com/volatusveritas/projector)
 project. In a sense, it serves as a summary of updates, registering changes and
-new features (or removed/deprecated features), but consistent updates on
-changes are not guaranteed at all. The actual purpose of it is to serve as a
-kind of devlog, whereby I will explain the reasoning behind my decisions for
-the syntax, features and implementation (and describe my difficulties, of
-course). This is not my first try at a programming language and, if it fails,
-it will of course not be my first failure.
+new/removed/deprecated features, but consistent updates on changes are not
+guaranteed at all. The actual purpose of it is to serve as a kind of devlog,
+whereby I will explain the reasoning behind my decisions for the syntax,
+features and implementation (and describe my difficulties, of course). This is
+not my first try at a programming language and, if it fails, it will of course
+not be my first failure.
 
-> If you have any tips, wants to contact me or ask anything, the best place to
+> If you have any tips or wants to contact me/ask anything, the best place to
 > find me is at Discord, just send a message to `Volatus#7684` (I know this is
 > not the best or most efficient method of communication for a public project,
 > but it should be enough while I don't create a Discord server for [my Twitch
