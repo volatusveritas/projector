@@ -14,8 +14,8 @@ The ProjectOr Development Journal is a collection of entries related to the
 [ProjectOr Programming Language](https://github.com/volatusveritas/projector)
 project. In a sense, it serves as a summary of updates, registering changes and
 new features (or removed/deprecated features), but consistent updates on
-changes is not guaranteed at all. The actual purpose of it is to serve as a
-kind of devlog, whereby I will explain the reasoning behing my decisions for
+changes are not guaranteed at all. The actual purpose of it is to serve as a
+kind of devlog, whereby I will explain the reasoning behind my decisions for
 the syntax, features and implementation (and describe my difficulties, of
 course). This is not my first try at a programming language and, if it fails,
 it will of course not be my first failure.
@@ -23,8 +23,8 @@ it will of course not be my first failure.
 > If you have any tips, wants to contact me or ask anything, the best place to
 > find me is at Discord, just send a message to `Volatus#7684` (I know this is
 > not the best or most efficient method of communication for a public project,
-> but it be enough while I don't create a Discord server for my Twitch
-> channel).
+> but it should be enough while I don't create a Discord server for [my Twitch
+> channel](https://twitch.tv/veritasvolatus).
 
 ## What is ProjectOr?
 
@@ -41,3 +41,10 @@ is currently written in Python, more for practicality than anything.
 > of course, will take a long time for me to do unless some angelic individuals
 > decide to bestow upon me the blessing of their gentleness and take into their
 > hands the task of porting it).
+
+<!-- This comment is an MD028 Fix-hack -->
+
+> When I talk about ProjectOr in the present tense, I'm really indicating what
+> the plans for the future of the language are. At this point in time,
+> ProjectOr is very immature as a language in general, even more so as a
+> generative programming language.
