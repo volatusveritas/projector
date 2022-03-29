@@ -12,7 +12,7 @@ capitalized 'O' at the end) is a reference to its expression-based nature.
 > cultivated through this project is about as small as meaningless, I have
 > plans to port most of it to C in order to greatly improve performance.
 
-<!-- This comment is an MD028 Fix-hack -->
+<!-- This comment is an MD028 fix-hack -->
 
 > **Streamer Note**: a lot of the production process and work being done on the
 > language will be streamed at [my Twitch

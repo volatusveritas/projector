@@ -42,9 +42,15 @@ is currently written in Python, more for practicality than anything.
 > decide to bestow upon me the blessing of their gentleness and take into their
 > hands the task of porting it).
 
-<!-- This comment is an MD028 Fix-hack -->
+<!-- This comment is an MD028 fix-hack -->
 
 > When I talk about ProjectOr in the present tense, I'm really indicating what
 > the plans for the future of the language are. At this point in time,
 > ProjectOr is very immature as a language in general, even more so as a
 > generative programming language.
+
+## Why is this entry numbered negative one?
+
+Because programmers start counting at zero. This is the entry before the
+entries, like a prelude, therefore it's one before zero, which is negative one.
+Entry number zero will be the first entry, and so on and so forth.
