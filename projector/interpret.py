@@ -53,32 +53,6 @@ def extract_string(expression, opening_index):
     return expression[opening_index + 1 : closing_index], closing_index
 
 
-def extract_group(expression, opening_index):
-    if opening_index == len(expression) - 1:
-        raise exceptions.ProjectorUnmatchedParenthesesError
-
-    closing_index = expression.find(')', opening_index + 1)
-
-    if closing_index == -1:
-        raise exceptions.ProjectorUnmatchedParenthesesError
-
-    subgroup_count = expression.count('(', opening_index + 1, closing_index)
-
-    if subgroup_count:
-        if closing_index >= len(expression) - subgroup_count:
-            raise exceptions.ProjectorUnmatchedParenthesesError
-
-        for _ in range(subgroup_count):
-            closing_index = expression.find(')', closing_index + 1)
-
-            if closing_index == -1:
-                raise exceptions.ProjectorUnmatchedParenthesesError
-
-    token_list = tokenize(expression[opening_index + 1 : closing_index])
-
-    return tokens.TokenGroup(token_list), closing_index
-
-
 
 def tokenize_unitoken(character):
     match character:
@@ -116,8 +90,21 @@ def tokenize(raw_expression):
             str_value, index = extract_string(raw_expression, index)
             token_list.append(tokens.StringValueToken(str_value))
         elif raw_expression[index] == '(':
-            token_group, index = extract_group(raw_expression, index)
-            token_list.append(token_group)
+            token_list.append(tokens.ParenthesesSymbolCoupleToken(False))
+        elif raw_expression[index] == ')':
+            token_list.append(tokens.ParenthesesSymbolCoupleToken(True))
+        elif raw_expression[index] == '[':
+            token_list.append(tokens.BracketsSymbolCoupleToken(False))
+        elif raw_expression[index] == ']':
+            token_list.append(tokens.BracketsSymbolCoupleToken(True))
+        elif raw_expression[index] == '{':
+            token_list.append(tokens.BracesSymbolCoupleToken(False))
+        elif raw_expression[index] == '}':
+            token_list.append(tokens.BracesSymbolCoupleToken(True))
+        elif raw_expression[index] == '<':
+            token_list.append(tokens.ChevronsSymbolCoupleToken(False))
+        elif raw_expression[index] == '>':
+            token_list.append(tokens.ChevronsSymbolCoupleToken(True))
         elif raw_expression[index] in constants.DECIMAL_NUMBER_CHARACTERS:
             number_str, index = match_extraction(
                 raw_expression, constants.DECIMAL_NUMBER_CHARACTERS, index
@@ -168,8 +155,10 @@ def parse(token):
 def evaluate(raw_expression, debug_mode=False):
     try:
         token_list = tokenize(raw_expression)
-        expression = parse(tokens.TokenGroup(token_list))
-        return expression.evaluate()
+        for token in token_list:
+            print(token)
+        # expression = parse(tokens.TokenGroup(token_list))
+        # return expression.evaluate()
     except exceptions.ProjectorError as error:
         if debug_mode:
             raise error

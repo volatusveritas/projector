@@ -15,6 +15,48 @@ class Token:
         return expressions.Expression()
 
 
+class SymbolCoupleToken(Token):
+    def __init__(self, closing=False):
+        self._signature_token_type = "SymbolCouple"
+        self._signature_couple_type = "None"
+        self._signature_delim_type = "Close" if closing else "Open"
+
+    def __str__(self):
+        return (
+            f"{super().__str__()}"
+            f" [{self._signature_couple_type}"
+            f" {self._signature_delim_type}]"
+        )
+
+
+class ParenthesesSymbolCoupleToken(SymbolCoupleToken):
+    def __init__(self, closing=False):
+        super().__init__(closing)
+
+        self._signature_couple_type = "Parentheses"
+
+
+class BracketsSymbolCoupleToken(SymbolCoupleToken):
+    def __init__(self, closing=False):
+        super().__init__(closing)
+
+        self._signature_couple_type = "Brackets"
+
+
+class BracesSymbolCoupleToken(SymbolCoupleToken):
+    def __init__(self, closing=False):
+        super().__init__(closing)
+
+        self._signature_couple_type = "Braces"
+
+
+class ChevronsSymbolCoupleToken(SymbolCoupleToken):
+    def __init__(self, closing=False):
+        super().__init__(closing)
+
+        self._signature_couple_type = "Chevrons"
+
+
 class ValueToken(Token):
     def __init__(self, value):
         self._signature_token_type = "Value"
@@ -23,7 +65,11 @@ class ValueToken(Token):
         self.value = value
 
     def __str__(self):
-        return f"{str(super())} ({self._signature_value_type}) {self.value}"
+        return (
+            f"{super().__str__()}"
+            f" ({self._signature_value_type})"
+            f" {self.value}"
+        )
 
     def getexpr(self):
         return expressions.ValueExpression(self)
@@ -78,9 +124,9 @@ class OperatorToken(Token):
 
     def __str__(self):
         return (
-            f"{str(super())} "
-            f"[{self._signature_operator_type}] "
-            f"P:{self.precedence}"
+            f"{super().__str__()}"
+            f" [{self._signature_operator_type}]"
+            f" P:{self.precedence}"
         )
 
     def getexpr(self, left=None, right=None):
@@ -154,7 +200,7 @@ class IdentifierToken(Token):
         self.name = name
 
     def __str__(self):
-        return f"{str(super())} {self.name}"
+        return f"{super().__str__()} {self.name}"
 
     def getexpr(self):
         return expressions.IdentifierExpression(self)
@@ -166,7 +212,7 @@ class FlowToken(Token):
         self._signature_flow_type = "None"
 
     def __str__(self):
-        return f"{str(super())} [{self._signature_flow_type}]"
+        return f"{super().__str__()} [{self._signature_flow_type}]"
 
     def getexpr(self):
         return expressions.FlowExpression()
