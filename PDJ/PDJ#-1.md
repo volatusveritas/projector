@@ -1,4 +1,4 @@
-# ProjectOr Development Journal Entry #-1
+# ProjectOr Development Journal, Entry #-1
 
 Welcome to the ProjectOr Development Journal (PDJ). This is the first entry on
 the journal, and it describes the purpose of these entries. They are all
