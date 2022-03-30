@@ -1,13 +1,17 @@
 # ProjectOr Development Journal, Entry #0
 
 So far, the development of ProjectOr has been an experiment more than anything,
-in three ways: firstly, I want to see if I'm actually capable of designing and
-implementing a programming language, or become capable of such a thing in the
-process of trying and failing; secondly, I want to show beginners what actually
-trying to do something new looks like, unlike YouTube tutorials and programming
-courses often do, or do very poorly[^1]; thirdly, I want to see if I can
-generate engagement in coding streams, in order to decide whether I will invest
-more time and effort in this secondary career or not.
+in three ways:
+
+- firstly, I want to see if I'm actually capable of designing and implementing
+  a programming language, or become capable of such a thing in the process of
+  trying and failing;
+- secondly, I want to show beginners what actually trying to do something new
+  looks like, unlike YouTube tutorials and programming courses often do, or do
+  very poorly[^1];
+- thirdly, I want to see if I can generate engagement in coding streams, in
+  order to decide whether I will invest more time and effort in this secondary
+  career or not.
 
 [^1]: Programming courses and tutorials very often lack any display of trial
   and failure, or, in the rare case in which these are seen, they are poor in
