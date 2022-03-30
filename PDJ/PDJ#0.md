@@ -1,7 +1,7 @@
 # ProjectOr Development Journal, Entry #0
 
 So far, the development of ProjectOr has been an experiment more than anything,
-in three ways: firstly, it want to see if I'm actually capable of designing and
+in three ways: firstly, I want to see if I'm actually capable of designing and
 implementing a programming language, or become capable of such a thing in the
 process of trying and failing; secondly, I want to show beginners what actually
 trying to do something new looks like, unlike YouTube tutorials and programming
@@ -23,10 +23,10 @@ more time and effort in this secondary career or not.
   to compare yourself to others, and the tipical result of that is sadness and
   amotivation. I shall write about these topics with increased depth in the
   future, but let it be concluded that the way tutorials and courses are
-  teaching their pupils at cukrent times is a dangerous slope of poor-quality
+  teaching their pupils at current times is a dangerous slope of poor-quality
   information and lack thereof towards sharp spikes of give-ups and "I don't
   need to learn that right now", where "right now" quite often ends up being
-  "never.
+  "never".
 
 Now that it's been somewhat tested and mathematical expressions seem to be
 correctly interpreted, it's a good time to actually start the hard work. A huge
