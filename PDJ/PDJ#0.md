@@ -20,7 +20,7 @@ more time and effort in this secondary career or not.
   their debugging skills, and suffer greatly from it, for it's an integral part
   of being a good programmer. Not only that, but it usually is also damaging to
   their mental health. We are at a point in our society where it's very common
-  to compare yourself to others, and the tipical result of that is sadness and
+  to compare yourself to others, and the typical result of that is sadness and
   amotivation. I shall write about these topics with increased depth in the
   future, but let it be concluded that the way tutorials and courses are
   teaching their pupils at current times is a dangerous slope of poor-quality
