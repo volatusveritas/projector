@@ -50,6 +50,19 @@ is currently written in Python, more for practicality than anything.
 
 ## Why is this entry numbered negative one?
 
-Because programmers start counting at zero. This is the entry before the
+Because (real) programmers start counting at zero. This is the entry before the
 entries, like a prelude, therefore it's one before zero, which is negative one.
-Entry number zero will be the first entry, and so on and so forth.
+Entry number zero will be the first entry, number one will be the second entry,
+and so on and so forth.
+
+### Checkpoint Entries
+
+Every entry which is a multiple of eight will be a **Checkpoint Entry**, a
+special entry in which I shall record what happened in the previous entries up
+to the first entry after the last checkpoint, just like the end of a chapter in
+a book.
+
+> Now you may ask: "Why eight? Is there any reason behind such a specific
+> choice?", and I shall answer, like the ones who know me should expect, that
+> there is no particular motive for this number to have been chosen... besides
+> the fact it's the closest integer to ten which is a power of two, of course.
