@@ -26,6 +26,8 @@ class SingleSymbolToken(Token):
 
 class CommaSingleSymbolToken(SingleSymbolToken):
     def __init__(self):
+        super().__init__()
+
         self._signature_symbol_type = "Comma"
 
 
