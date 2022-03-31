@@ -133,15 +133,20 @@ def parse(token):
     return token.getexpr()
 
 
-def evaluate(raw_expression, debug_mode=False):
+
+def evaluate_single(raw_expression, debug_mode=False):
     try:
         token_list = tokenize(raw_expression)
-        for token in token_list:
-            print(token)
-        # expression = parse(tokens.TokenGroup(token_list))
+        expression = parse(token_list)
+        print(expression)  # temp
         # return expression.evaluate()
     except exceptions.ProjectorError as error:
         if debug_mode:
             raise error
 
         print(error)
+
+
+def evaluate(raw_expression, debug_mode=False):
+    for raw_subexpression in raw_expression.split(';'):
+        evaluate_single(raw_subexpression, debug_mode)
