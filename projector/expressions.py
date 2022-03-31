@@ -30,7 +30,11 @@ class ValueExpression(Expression):
         self.value = value_token.value
 
     def __str__(self):
-        return f"{str(super())} ({self._signature_value_type}) {self.value}"
+        return (
+            f"{super().__str__()}"
+            f" ({self._signature_value_type})"
+            f" {self.value}"
+        )
 
     def evaluate(self):
         return self.value
@@ -73,7 +77,7 @@ class OperationExpression(Expression):
         self.right = right
 
     def __str__(self):
-        return f"{str(super())} [{self._signature_operation_type}]"
+        return f"{super().__str__()} [{self._signature_operation_type}]"
 
     def validate_arguments(self, left, right):
         if not isinstance(left, constants.NUMERICAL_TYPES):
@@ -205,7 +209,7 @@ class IdentifierExpression(Expression):
         self.name = identifier_token.name
 
     def __str__(self):
-        return f"{str(super())} '{self.name}'"
+        return f"{super().__str__()} '{self.name}'"
 
     def evaluate(self):
         if not self.name in _variable_bank:
@@ -220,7 +224,7 @@ class FlowExpression(Expression):
         self._signature_flow_type = "None"
 
     def __str__(self):
-        return f"{str(super())} [{self._signature_flow_type}]"
+        return f"{super().__str__()} [{self._signature_flow_type}]"
 
 
 class BreakExpression(FlowExpression):
