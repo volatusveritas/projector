@@ -75,6 +75,10 @@ def tokenize_unitoken(character):
 def tokenize_word(word):
     if word in constants.FLOWSTOP_KEYWORDS:
         return tokens.BreakFlowToken()
+    elif word == "on":
+        return tokens.BoolValueToken(True)
+    elif word == "off":
+        return tokens.BoolValueToken(False)
     else:
         return tokens.IdentifierToken(word)
 
