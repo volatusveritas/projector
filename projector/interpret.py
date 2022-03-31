@@ -1,5 +1,6 @@
 from projector import constants
 from projector import exceptions
+from projector import expressions
 from projector import tokens
 
 
@@ -130,6 +131,9 @@ def tokenize(raw_expression):
 
 
 def parse(token_list):
+    if not token_list:
+        return expressions.Expression()
+
     operator_index = get_next_operator_index(token_list)
 
     if operator_index == -1:
@@ -153,8 +157,8 @@ def evaluate_single(raw_expression, debug_mode=False):
     try:
         token_list = tokenize(raw_expression)
         expression = parse(token_list)
-        print(expression)  # temp
-        # return expression.evaluate()
+        # print(expression)  # temp
+        return expression.evaluate()
     except exceptions.ProjectorError as error:
         if debug_mode:
             raise error
@@ -164,4 +168,4 @@ def evaluate_single(raw_expression, debug_mode=False):
 
 def evaluate(raw_expression, debug_mode=False):
     for raw_subexpression in raw_expression.split(';'):
-        evaluate_single(raw_subexpression, debug_mode)
+        return evaluate_single(raw_subexpression, debug_mode)
