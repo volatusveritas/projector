@@ -38,8 +38,8 @@ class SymbolCoupleToken(Token):
     def __str__(self):
         return (
             f"{super().__str__()}"
-            f" [{self._signature_couple_type}"
-            f" {self._signature_delim_type}]"
+            f" [{self._signature_couple_type}]"
+            f" {self._signature_delim_type}"
         )
 
 
