@@ -24,7 +24,7 @@ class SingleSymbolToken(Token):
         return f"{super().__str__()} [{self._signature_symbol_type}]"
 
 
-class CommaSingleSymbolToken(SingleSymbolToken):
+class CommaToken(SingleSymbolToken):
     def __init__(self):
         super().__init__()
 
@@ -45,28 +45,28 @@ class SymbolCoupleToken(Token):
         )
 
 
-class ParenthesesSymbolCoupleToken(SymbolCoupleToken):
+class ParenthesesToken(SymbolCoupleToken):
     def __init__(self, closing=False):
         super().__init__(closing)
 
         self._signature_couple_type = "Parentheses"
 
 
-class BracketsSymbolCoupleToken(SymbolCoupleToken):
+class BracketsToken(SymbolCoupleToken):
     def __init__(self, closing=False):
         super().__init__(closing)
 
         self._signature_couple_type = "Brackets"
 
 
-class BracesSymbolCoupleToken(SymbolCoupleToken):
+class BracesToken(SymbolCoupleToken):
     def __init__(self, closing=False):
         super().__init__(closing)
 
         self._signature_couple_type = "Braces"
 
 
-class ChevronsSymbolCoupleToken(SymbolCoupleToken):
+class ChevronsToken(SymbolCoupleToken):
     def __init__(self, closing=False):
         super().__init__(closing)
 
@@ -91,44 +91,44 @@ class ValueToken(Token):
         return expressions.ValueExpression(self)
 
 
-class IntegerValueToken(ValueToken):
+class IntegerToken(ValueToken):
     def __init__(self, value):
         super().__init__(value)
 
         self._signature_value_type = "Integer"
 
     def getexpr(self):
-        return expressions.IntegerValueExpression(self)
+        return expressions.IntegerExpression(self)
 
 
-class FloatValueToken(ValueToken):
+class FloatToken(ValueToken):
     def __init__(self, value):
         super().__init__(value)
 
         self._signature_value_type = "Float"
 
     def getexpr(self):
-        return expressions.FloatValueExpression(self)
+        return expressions.FloatExpression(self)
 
 
-class StringValueToken(ValueToken):
+class StringToken(ValueToken):
     def __init__(self, value):
         super().__init__(value)
 
         self._signature_value_type = "String"
 
     def getexpr(self):
-        return expressions.StringValueExpression(self)
+        return expressions.StringExpression(self)
 
 
-class BoolValueToken(ValueToken):
+class BoolToken(ValueToken):
     def __init__(self, value):
         super().__init__(value)
 
         self._signature_value_type = "Bool"
 
     def getexpr(self):
-        return expressions.BoolValueExpression(self)
+        return expressions.BoolExpression(self)
 
 
 class OperatorToken(Token):
@@ -149,64 +149,64 @@ class OperatorToken(Token):
         return expressions.OperationExpression(left, right)
 
 
-class AdditionOperatorToken(OperatorToken):
+class AdditionToken(OperatorToken):
     def __init__(self):
         super().__init__(constants.ADDITION_PRECEDENCE)
 
         self._signature_operator_type = "Addition"
 
     def getexpr(self, left=None, right=None):
-        return expressions.AdditionOperationExpression(left, right)
+        return expressions.AdditionExpression(left, right)
 
 
-class SubtractionOperatorToken(OperatorToken):
+class SubtractionToken(OperatorToken):
     def __init__(self):
         super().__init__(constants.SUBTRACTION_PRECEDENCE)
 
         self._signature_operator_type = "Subtraction"
 
     def getexpr(self, left=None, right=None):
-        return expressions.SubtractionOperationExpression(left, right)
+        return expressions.SubtractionExpression(left, right)
 
 
-class MultiplicationOperatorToken(OperatorToken):
+class MultiplicationToken(OperatorToken):
     def __init__(self):
         super().__init__(constants.MULTIPLICATION_PRECEDENCE)
 
         self._signature_operator_type = "Multiplication"
 
     def getexpr(self, left=None, right=None):
-        return expressions.MultiplicationOperationExpression(left, right)
+        return expressions.MultiplicationExpression(left, right)
 
 
-class DivisionOperatorToken(OperatorToken):
+class DivisionToken(OperatorToken):
     def __init__(self):
         super().__init__(constants.DIVISION_PRECEDENCE)
 
         self._signature_operator_type = "Division"
 
     def getexpr(self, left=None, right=None):
-        return expressions.DivisionOperationExpression(left, right)
+        return expressions.DivisionExpression(left, right)
 
 
-class ModuloOperatorToken(OperatorToken):
+class ModuloToken(OperatorToken):
     def __init__(self):
         super().__init__(constants.MODULO_PRECEDENCE)
 
         self._signature_operator_type = "Modulo"
 
     def getexpr(self, left=None, right=None):
-        return expressions.ModuloOperationExpression(left, right)
+        return expressions.ModuloExpression(left, right)
 
 
-class AssignmentOperatorToken(OperatorToken):
+class AssignmentToken(OperatorToken):
     def __init__(self):
         super().__init__(constants.ASSIGNMENT_PRECEDENCE)
 
         self._signature_operator_type = "Assignment"
 
     def getexpr(self, left=None, right=None):
-        return expressions.AssignmentOperationExpression(left, right)
+        return expressions.AssignmentExpression(left, right)
 
 
 class IdentifierToken(Token):
@@ -234,11 +234,11 @@ class FlowToken(Token):
         return expressions.FlowExpression()
 
 
-class BreakFlowToken(FlowToken):
+class BreakToken(FlowToken):
     def __init__(self):
         super().__init__()
 
         self._signature_flow_type = "Break"
 
     def getexpr(self):
-        return expressions.BreakFlowExpression()
+        return expressions.BreakExpression()

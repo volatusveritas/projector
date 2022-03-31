@@ -1,6 +1,5 @@
 from projector import constants
 from projector import exceptions
-from projector import expressions
 from projector import tokens
 
 
@@ -57,28 +56,28 @@ def extract_string(expression, opening_index):
 def tokenize_unitoken(character):
     match character:
         case '+':
-            return tokens.AdditionOperatorToken()
+            return tokens.AdditionToken()
         case '-':
-            return tokens.SubtractionOperatorToken()
+            return tokens.SubtractionToken()
         case '*':
-            return tokens.MultiplicationOperatorToken()
+            return tokens.MultiplicationToken()
         case '/':
-            return tokens.DivisionOperatorToken()
+            return tokens.DivisionToken()
         case '%':
-            return tokens.ModuloOperatorToken()
+            return tokens.ModuloToken()
         case '=':
-            return tokens.AssignmentOperatorToken()
+            return tokens.AssignmentToken()
         case _:
             raise exceptions.ProjectorInvalidSymbolError(character)
 
 
 def tokenize_word(word):
     if word in constants.FLOWSTOP_KEYWORDS:
-        return tokens.BreakFlowToken()
+        return tokens.BreakToken()
     elif word == "on":
-        return tokens.BoolValueToken(True)
+        return tokens.BoolToken(True)
     elif word == "off":
-        return tokens.BoolValueToken(False)
+        return tokens.BoolToken(False)
     else:
         return tokens.IdentifierToken(word)
 
@@ -92,30 +91,30 @@ def tokenize(raw_expression):
             pass
         elif raw_expression[index] == '"':
             str_value, index = extract_string(raw_expression, index)
-            token_list.append(tokens.StringValueToken(str_value))
+            token_list.append(tokens.StringToken(str_value))
         elif raw_expression[index] == ',':
-            token_list.append(tokens.CommaSingleSymbolToken())
+            token_list.append(tokens.CommaToken())
         elif raw_expression[index] == '(':
-            token_list.append(tokens.ParenthesesSymbolCoupleToken(False))
+            token_list.append(tokens.ParenthesesToken(False))
         elif raw_expression[index] == ')':
-            token_list.append(tokens.ParenthesesSymbolCoupleToken(True))
+            token_list.append(tokens.ParenthesesToken(True))
         elif raw_expression[index] == '[':
-            token_list.append(tokens.BracketsSymbolCoupleToken(False))
+            token_list.append(tokens.BracketsToken(False))
         elif raw_expression[index] == ']':
-            token_list.append(tokens.BracketsSymbolCoupleToken(True))
+            token_list.append(tokens.BracketsToken(True))
         elif raw_expression[index] == '{':
-            token_list.append(tokens.BracesSymbolCoupleToken(False))
+            token_list.append(tokens.BracesToken(False))
         elif raw_expression[index] == '}':
-            token_list.append(tokens.BracesSymbolCoupleToken(True))
+            token_list.append(tokens.BracesToken(True))
         elif raw_expression[index] == '<':
-            token_list.append(tokens.ChevronsSymbolCoupleToken(False))
+            token_list.append(tokens.ChevronsToken(False))
         elif raw_expression[index] == '>':
-            token_list.append(tokens.ChevronsSymbolCoupleToken(True))
+            token_list.append(tokens.ChevronsToken(True))
         elif raw_expression[index] in constants.DECIMAL_NUMBER_CHARACTERS:
             number_str, index = match_extraction(
                 raw_expression, constants.DECIMAL_NUMBER_CHARACTERS, index
             )
-            token_list.append(tokens.IntegerValueToken(int(number_str)))
+            token_list.append(tokens.IntegerToken(int(number_str)))
         elif raw_expression[index] in constants.WORD_BEGIN_CHARACTERS:
             word_str, index = match_extraction(
                 raw_expression, constants.WORD_CHARACTERS, index

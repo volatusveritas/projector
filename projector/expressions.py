@@ -36,28 +36,28 @@ class ValueExpression(Expression):
         return self.value
 
 
-class IntegerValueExpression(ValueExpression):
+class IntegerExpression(ValueExpression):
     def __init__(self, integer_token):
         super().__init__(integer_token)
 
         self._signature_value_type = "Integer"
 
 
-class FloatValueExpression(ValueExpression):
+class FloatExpression(ValueExpression):
     def __init__(self, float_token):
         super().__init__(float_token)
 
         self._signature_value_type = "Float"
 
 
-class StringValueExpression(ValueExpression):
+class StringExpression(ValueExpression):
     def __init__(self, string_token):
         super().__init__(string_token)
 
         self._signature_value_type = "String"
 
 
-class BoolValueExpression(ValueExpression):
+class BoolExpression(ValueExpression):
     def __init__(self, bool_token):
         super.__init__(bool_token)
 
@@ -86,7 +86,7 @@ class OperationExpression(Expression):
         return (self.left, self.right)
 
 
-class AdditionOperationExpression(OperationExpression):
+class AdditionExpression(OperationExpression):
     def __init__(self, left=None, right=None):
         super().__init__(left, right)
 
@@ -104,7 +104,7 @@ class AdditionOperationExpression(OperationExpression):
         return left_term + right_term
 
 
-class SubtractionOperationExpression(OperationExpression):
+class SubtractionExpression(OperationExpression):
     def __init__(self, left=None, right=None):
         super().__init__(left, right)
 
@@ -122,7 +122,7 @@ class SubtractionOperationExpression(OperationExpression):
         return left_term - right_term
 
 
-class MultiplicationOperationExpression(OperationExpression):
+class MultiplicationExpression(OperationExpression):
     def __init__(self, left=None, right=None):
         super().__init__(left, right)
 
@@ -137,7 +137,7 @@ class MultiplicationOperationExpression(OperationExpression):
         return left_factor * right_factor
 
 
-class DivisionOperationExpression(OperationExpression):
+class DivisionExpression(OperationExpression):
     def __init__(self, left=None, right=None):
         super().__init__(left, right)
 
@@ -158,7 +158,7 @@ class DivisionOperationExpression(OperationExpression):
         return dividend // divisor
 
 
-class ModuloOperationExpression(DivisionOperationExpression):
+class ModuloExpression(DivisionExpression):
     def __init__(self, left=None, right=None):
         super().__init__(left, right)
 
@@ -173,7 +173,7 @@ class ModuloOperationExpression(DivisionOperationExpression):
         return dividend % divisor
 
 
-class AssignmentOperationExpression(OperationExpression):
+class AssignmentExpression(OperationExpression):
     def __init__(self, left=None, right=None):
         super().__init__(left, right)
 
@@ -223,7 +223,7 @@ class FlowExpression(Expression):
         return f"{str(super())} [{self._signature_flow_type}]"
 
 
-class BreakFlowExpression(FlowExpression):
+class BreakExpression(FlowExpression):
     def __init__(self):
         super().__init__()
 
