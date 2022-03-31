@@ -5,12 +5,12 @@ from projector import tokens
 
 
 
-def get_next_operator_index(token_group):
+def get_next_operator_index(token_list):
     operator_precedence = constants.BIGGEST_PRECEDENCE + 1
     operator_index = -1
 
-    index = len(token_group) - 1
-    for token in list(reversed(token_group)):
+    index = len(token_list) - 1
+    for token in list(reversed(token_list)):
         if (isinstance(token, tokens.OperatorToken) and
             token.precedence < operator_precedence
         ):
@@ -129,8 +129,23 @@ def tokenize(raw_expression):
 
 
 
-def parse(token):
-    return token.getexpr()
+def parse(token_list):
+    operator_index = get_next_operator_index(token_list)
+
+    if operator_index == -1:
+        if len(token_list) > 1:
+            raise exceptions.ProjectorOperatorAbsentError
+
+        return token_list[0].getexpr()
+
+    before_operator = token_list[: operator_index]
+    after_operator = token_list[operator_index :]
+    del after_operator[0]
+
+    return token_list[operator_index].getexpr(
+        parse(before_operator),
+        parse(after_operator)
+    )
 
 
 
