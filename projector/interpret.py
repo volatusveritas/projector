@@ -75,6 +75,10 @@ def tokenize_unitoken(character):
 def tokenize_word(word):
     if word in constants.FLOWSTOP_KEYWORDS:
         return tokens.BreakFlowToken()
+    elif word == "on":
+        return tokens.BoolValueToken(True)
+    elif word == "off":
+        return tokens.BoolValueToken(False)
     else:
         return tokens.IdentifierToken(word)
 
@@ -89,6 +93,8 @@ def tokenize(raw_expression):
         elif raw_expression[index] == '"':
             str_value, index = extract_string(raw_expression, index)
             token_list.append(tokens.StringValueToken(str_value))
+        elif raw_expression[index] == ',':
+            token_list.append(tokens.CommaSingleSymbolToken())
         elif raw_expression[index] == '(':
             token_list.append(tokens.ParenthesesSymbolCoupleToken(False))
         elif raw_expression[index] == ')':
@@ -124,31 +130,7 @@ def tokenize(raw_expression):
 
 
 
-def parse_group(token_group):
-    if not token_group:
-        return expressions.Expression()
-
-    if not token_group.operative:
-        if len(token_group) > 1:
-            raise exceptions.ProjectorOperatorAbsentError
-
-        return parse(token_group[0])
-
-    operator_index = get_next_operator_index(token_group)
-
-    left_tokens = token_group[: operator_index]
-    right_tokens = token_group[operator_index + 1 :]
-
-    return token_group[operator_index].getexpr(
-        parse_group(tokens.TokenGroup(left_tokens)),
-        parse_group(tokens.TokenGroup(right_tokens))
-    )
-
-
 def parse(token):
-    if isinstance(token, tokens.TokenGroup):
-        return parse_group(token)
-
     return token.getexpr()
 
 

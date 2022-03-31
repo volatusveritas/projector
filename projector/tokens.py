@@ -15,6 +15,20 @@ class Token:
         return expressions.Expression()
 
 
+class SingleSymbolToken(Token):
+    def __init__(self):
+        self._signature_token_type = "SingleSymbol"
+        self._signature_symbol_type = "None"
+
+    def __str__(self):
+        return f"{super().__str__()} [{self._signature_symbol_type}]"
+
+
+class CommaSingleSymbolToken(SingleSymbolToken):
+    def __init__(self):
+        self._signature_symbol_type = "Comma"
+
+
 class SymbolCoupleToken(Token):
     def __init__(self, closing=False):
         self._signature_token_type = "SymbolCouple"
@@ -226,58 +240,3 @@ class BreakFlowToken(FlowToken):
 
     def getexpr(self):
         return expressions.BreakFlowExpression()
-
-
-class TokenGroup(Token):
-    def __init__(self, token_list=[]):
-        self._token_list = token_list
-        self.operative, self.nested = self.get_attributes()
-
-    def __len__(self):
-        return len(self._token_list)
-
-    def __getitem__(self, key):
-        return self._token_list[key]
-
-    def __iter__(self):
-        return iter(self._token_list)
-
-    def __bool__(self):
-        return bool(self._token_list)
-
-    def __str__(self, indent_level=0):
-        hash_signature = hash(self)
-        indent_padding = indent_level * '\t'
-
-        group_string = f"{indent_padding}<Token: GRP -- {hash_signature}"
-
-        if self.operative:
-            group_string += " (operative)"
-
-        if self.nested:
-            group_string += " (nested)"
-
-        for token in self._token_list:
-            if isinstance(token, TokenGroup):
-                group_string += f"\n{token.__str__(indent_level + 1)}"
-            else:
-                group_string += f"\n{indent_padding}\t{str(token)}"
-
-        group_string += f"\n{indent_padding}{hash_signature} -- >"
-
-        return group_string
-
-    def get_attributes(self):
-        operative = False
-        nested = False
-
-        for token in self._token_list:
-            if isinstance(token, OperatorToken):
-                operative = True
-            elif isinstance(token, TokenGroup):
-                nested = True
-
-            if operative and nested:
-                break
-
-        return operative, nested
