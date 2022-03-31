@@ -3,13 +3,13 @@
 So far, the development of ProjectOr has been an experiment more than anything,
 in three ways:
 
-- firstly, I want to see if I'm actually capable of designing and implementing
-  a programming language, or become capable of such a thing in the process of
-  trying and failing;
-- secondly, I want to show beginners what actually trying to do something new
+- firstly, I wanted to see if I'm actually capable of designing and
+  implementing a programming language, or of becoming capable of such a thing
+  in the process of trying and failing;
+- secondly, I wanted to show beginners what actually trying to do something new
   looks like, unlike YouTube tutorials and programming courses often do, or do
   very poorly[^1];
-- thirdly, I want to see if I can generate engagement in coding streams, in
+- thirdly, I wanted to see if I can generate engagement in coding streams, in
   order to decide whether I will invest more time and effort in this secondary
   career or not.
 
@@ -19,10 +19,10 @@ in three ways:
   in perfect step-by-step fashion, as if the programmer already knew with
   outstanding precision what he had to do, how to do it, and was sure it was
   going to work. Unfortunately, this leads many beginner programmers,
-  especially the many who are addicted to said tutorials, to think this is how
+  especially the many who are addicted to said tutorials, to think this is what
   real world programming looks like. This leads them to delay the blossoming of
   their debugging skills, and suffer greatly from it, for it's an integral part
-  of being a good programmer. Not only that, but it usually is also damaging to
+  of being a good programmer. Not only that, but it is usually damaging to
   their mental health. We are at a point in our society where it's very common
   to compare yourself to others, and the typical result of that is sadness and
   amotivation. I shall write about these topics with increased depth in the
@@ -45,33 +45,32 @@ keywords, of course).
 ## A keyword-based language
 
 Last stream (29/03/2022) I discussed how I wanted the keywords to make sense
-and at the same time fit into a fantasy dungeon-like setting (as you can see, I
-love throwing challenges at myself in rather unnecessary amounts). So the
+and, at the same time, fit into a fantasy dungeon-like setting (as you can see,
+I love throwing challenges at myself in rather unnecessary amounts). So the
 brainstorming began and I decided to name the basic data types as dungeon
 elements and contraptions. Here is the result of such playful labor:
 
 - Integer (int) became `abacus`. An abacus only has whole pieces and its
-  antique nature fits somewhat well with a medieval RPG setting.
+  antique nature fits somewhat well with a medieval RPG setting;
 - Floating point (float) became `decimal`. I tried to find some object to which
   attach floating point numbers, but couldn't, so I just went with the standard
-  name for it.
+  name for it;
 - Boolean (bool) became `lever`. Levers only have two mechanical states, and
   the natural consequence of such a thing is that true and false have now
-  become `on` and `off`, respectively.
+  become `on` and `off`, respectively;
 - String (str) became `scroll`. A scroll can be short or long, and is nothing
-  but a collection of individual characters or symbols, just like a string.
+  but a collection of individual characters or symbols;
 - Array (arr) became `chest`. A chest stores items rather unorganizedly (it's
   hard to extract a specific item) and the contents pile up (when you add more
-  and more items, the ones at the bottom become harder to get out), just like
-  an array.
+  and more items, the ones at the bottom become harder to get out);
 - Dictionary (dict, HashMap) became `backpack`. Compared to a chest, a backpack
   is very organized and has specific pockets for specific kinds of items, so
   it's easier to get specific items out as long as you know what you're trying
-  to get out, just like a dictionary.
-- Linked list (llist) became `chain`. A chain is composed by `links`, connected
-  to the one before and after itself. It's not a complex task to remove one of
-  the links, as all you need to do is connect the one which was before and
-  after together, just like a linked list.
+  to get out, just like a dictionary;
+- Linked list (llist) became `chain`. A chain is composed by `links`, each of
+  which is connected to the ones before and after itself. It's not a complex
+  task to remove one of the links, as all you need to do is connect the ones
+  that were before and after it together;
 
 ### Poetry-like syntax
 
@@ -81,13 +80,13 @@ assignment operator, and value, in that order) and while `int amount = 15` read
 as "integer named 'amount' with value 15" makes sense, all you need to do is
 introduce array notation and the whole thing breaks; `int amounts[2] = {0 ,1}`
 read as "integer named amounts which is actually an array with two elements
-with values 0 and 1" doesn't make that much sense, now does it? My solution
-is to always introduce the type after the name in isolation, so it always makes
-sense, observe:
+with values 0 and 1" doesn't make that much practical sense, now does it? My
+solution is to always introduce the type after the name in isolation, so it
+always makes sense, observe:
 
 - `amount (int) = 15` read as "amount (an integer) with value 15";
 - `amounts (int[]) = {0, 1}` read as "amounts (an integer array) with values 0
-  and 1;
+  and 1";
 - `precisionTable (float[][]) = ...` read as "precisionTable (a two-dimensional
   array of floats) with value ...";
 
@@ -96,7 +95,7 @@ sense, observe:
 Next, I though of how to turn array notation (`int[]`, `float[][]`, or
 `char[]`, for example) into a more readable syntax that (ab)uses keywords, and
 so my final conclusion came to be `chest of <type>` where `<type>` is the type
-of data to sequentialized, look at some examples:
+of data to sequentialized. Look at some examples:
 
 - `lines (chest of scroll) = ["first line", "second line"]`;
 - `amounts (chest of abacus) = [5, 3, 7]`;
@@ -111,7 +110,7 @@ the use of chained array statements as the usual, which looks a bit goofy:
 - `voxels (chest of chest of chest of abacus) = ...`;
 
 and compressed notation, which is a bit more efficient both to parse and write,
-but looks a bit ouf o place in a medieval environment:
+but looks a bit ouf of place in a medieval environment:
 
 - `precisionTable (2D chest of rational) = ...`;
 - `obstructionMask (2D chest of lever) = ...`;
@@ -124,10 +123,10 @@ option, compressed notation. Linked lists will use the same notation, except
 for the fact that `chest of` will become `chain of`.
 
 Dictionaries are a bit different, because typed dictionaries need to be
-provided with two types: the type of key to be used, and the type of the
-values. So, to keep things consistent, I'm going to make an extension of the
-already determined array notation. I have some possibilities in mind; the
-following examples suggest a dictionary which maps integers to strings:
+provided with two types: the type of key, and the type of the values. So, to
+keep things consistent, I'm going to make an extension of the already
+determined array notation. I have some possibilities in mind; the following
+examples suggest a dictionary which maps integers to strings:
 
 - `backpack of abacus like scroll`;
 - `backpack of abacus meaning scroll`;
@@ -144,17 +143,17 @@ operator token, or the integer and string tokens, but it was also responsible
 for grouping values inside parentheses, and it would deliver a TokenGroup token
 with other tokens inside to the parser. This is not optimal, because the
 tokenizer doesn't know context (that's the parser's task) and as a result often
-obfuscates the actual meaning of these parentheses (it also made it quit
+obfuscates the actual meaning of these parentheses (it also made it quite
 difficult to implement the aforementioned variable declaration syntax, which
 makes use of parentheses. The way they were parsed also felt hacky.
 Additionally, the concerns of my code were incorrectly separated; in a simple
 and maybe shallow way of describing it:
 
-- the tokenizer's job is to generate individual tokens, ignoring whatever their
-  surrounding symbols may mean (it's non-contextual);
-- the parser's job is to, based on the tokens generated by the tokenizer,
-  recognize the meaning of these symbols under context, and generate an
-  appropriate execution tree;
+- the tokenizer's job is to generate individual tokens based on raw expression
+  input, ignoring whatever their surrounding symbols may mean (it's
+  non-contextual);
+- the parser's job is to recognize the meaning of the symbols generated by the
+  tokenizer under context, and generate an appropriate execution tree;
 - the evaluator's job is to, based on the execution tree generated by the
   parser, produce and format an output;
 
