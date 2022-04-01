@@ -8,7 +8,7 @@ class Token:
     def __init__(self):
         self._signature_token_type = "Null"
 
-    def __str__(self):
+    def __repr__(self):
         return f"<Token: {self._signature_token_type}>"
 
     def getexpr(self):
@@ -20,8 +20,8 @@ class SingleSymbolToken(Token):
         self._signature_token_type = "SingleSymbol"
         self._signature_symbol_type = "None"
 
-    def __str__(self):
-        return f"{super().__str__()} [{self._signature_symbol_type}]"
+    def __repr__(self):
+        return f"{super().__repr__()} [{self._signature_symbol_type}]"
 
 
 class CommaToken(SingleSymbolToken):
@@ -37,9 +37,9 @@ class SymbolCoupleToken(Token):
         self._signature_couple_type = "None"
         self._signature_delim_type = "Close" if closing else "Open"
 
-    def __str__(self):
+    def __repr__(self):
         return (
-            f"{super().__str__()}"
+            f"{super().__repr__()}"
             f" [{self._signature_couple_type}]"
             f" {self._signature_delim_type}"
         )
@@ -80,15 +80,15 @@ class ValueToken(Token):
 
         self.value = value
 
-    def __str__(self):
+    def __repr__(self):
         return (
-            f"{super().__str__()}"
+            f"{super().__repr__()}"
             f" ({self._signature_value_type})"
             f" {self.value}"
         )
 
     def getexpr(self):
-        return expressions.ValueExpression(self)
+        return expressions.ValueExpression(self.value)
 
 
 class IntegerToken(ValueToken):
@@ -98,7 +98,7 @@ class IntegerToken(ValueToken):
         self._signature_value_type = "Integer"
 
     def getexpr(self):
-        return expressions.IntegerExpression(self)
+        return expressions.AbacusExpression(self.value)
 
 
 class FloatToken(ValueToken):
@@ -108,7 +108,7 @@ class FloatToken(ValueToken):
         self._signature_value_type = "Float"
 
     def getexpr(self):
-        return expressions.FloatExpression(self)
+        return expressions.RationalExpression(self.value)
 
 
 class StringToken(ValueToken):
@@ -118,7 +118,7 @@ class StringToken(ValueToken):
         self._signature_value_type = "String"
 
     def getexpr(self):
-        return expressions.StringExpression(self)
+        return expressions.ScrollExpression(self.value)
 
 
 class BoolToken(ValueToken):
@@ -128,7 +128,7 @@ class BoolToken(ValueToken):
         self._signature_value_type = "Bool"
 
     def getexpr(self):
-        return expressions.BoolExpression(self)
+        return expressions.LeverExpression(self.value)
 
 
 class OperatorToken(Token):
@@ -138,9 +138,9 @@ class OperatorToken(Token):
 
         self.precedence = precedence
 
-    def __str__(self):
+    def __repr__(self):
         return (
-            f"{super().__str__()}"
+            f"{super().__repr__()}"
             f" [{self._signature_operator_type}]"
             f" P:{self.precedence}"
         )
@@ -215,8 +215,8 @@ class IdentifierToken(Token):
 
         self.name = name
 
-    def __str__(self):
-        return f"{super().__str__()} {self.name}"
+    def __repr__(self):
+        return f"{super().__repr__()} {self.name}"
 
     def getexpr(self):
         return expressions.IdentifierExpression(self)
@@ -227,8 +227,8 @@ class FlowToken(Token):
         self._signature_token_type = "Flow"
         self._signature_flow_type = "None"
 
-    def __str__(self):
-        return f"{super().__str__()} [{self._signature_flow_type}]"
+    def __repr__(self):
+        return f"{super().__repr__()} [{self._signature_flow_type}]"
 
     def getexpr(self):
         return expressions.FlowExpression()
