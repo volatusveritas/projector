@@ -8,6 +8,7 @@ from projector import meta
 
 
 debug_mode = False
+tokenizer_only = False
 
 
 
@@ -20,6 +21,7 @@ def projector_help():
 "\n"
 "ProjOptions:\n"
 "  -d, --debug  start projector in debug mode\n"
+"  -t, --token  run only the tokenizer\n"
 "\n"
 "InitMethods:\n"
 "  -h, --help  show this help message and exit\n"
@@ -38,7 +40,9 @@ def start_file(filename):
     try:
         with open(filename) as file:
             for raw_expression in file.read().split(';'):
-                result = interpret.evaluate(raw_expression, debug_mode)
+                result = interpret.evaluate(
+                    raw_expression, debug_mode, tokenizer_only
+                )
 
                 if not result is None:
                     print(result)
@@ -56,7 +60,9 @@ def start_interactive():
         raw_input = input(">>> ")
 
         for raw_expression in raw_input.split(';'):
-            result = interpret.evaluate(raw_expression, debug_mode)
+            result = interpret.evaluate(
+                raw_expression, debug_mode, tokenizer_only
+            )
 
             if not result is None:
                 print(result)
@@ -64,7 +70,7 @@ def start_interactive():
 
 def start_expression(full_expression):
     for raw_expression in full_expression.split(';'):
-        result = interpret.evaluate(raw_expression, debug_mode)
+        result = interpret.evaluate(raw_expression, debug_mode, tokenizer_only)
 
         if not result is None:
             print(result)
@@ -78,6 +84,11 @@ def consume_argument():
         case "-d" | "--debug":
             global debug_mode
             debug_mode = True
+
+            del sys.argv[0]
+        case "-t" | "--token":
+            global tokenizer_only
+            tokenizer_only = True
 
             del sys.argv[0]
         case "-i" | "--interactive":
