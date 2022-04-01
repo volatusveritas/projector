@@ -10,7 +10,7 @@ def get_next_operator_index(token_list):
     operator_precedence = constants.BIGGEST_PRECEDENCE + 1
     operator_index = -1
 
-    index = len(token_list) - 1
+    index = len(token_list)-1
     for token in list(reversed(token_list)):
         if (isinstance(token, tokens.OperatorToken) and
             token.precedence < operator_precedence
@@ -26,31 +26,51 @@ def get_next_operator_index(token_list):
     return operator_index
 
 
-def match_extraction(str, matching_group, starting_index=0):
-    if starting_index == len(str) - 1:
-        return str[starting_index], starting_index
+def extract_word(expression, starting_index):
+    if starting_index == len(expression)-1:
+        return expression[starting_index], starting_index
 
     ending_index = starting_index
 
-    for character in str[starting_index + 1 :]:
-        if character not in matching_group:
+    for character in expression[starting_index+1 :]:
+        if character not in constants.WORD_CHARACTERS:
             break
 
         ending_index += 1
 
-    return str[starting_index : ending_index + 1], ending_index
+    return expression[starting_index : ending_index+1], ending_index
+
+
+def extract_number(expression, starting_index):
+    if starting_index == len(expression)-1:
+        return expression[starting_index], False, starting_index
+
+    ending_index = starting_index
+    is_float = False
+
+    for character in expression[starting_index+1 :]:
+        if character == '.':
+            if is_float:
+                break
+            is_float = True
+        elif character not in constants.DECIMAL_NUMBER_CHARACTERS:
+            break
+
+        ending_index += 1
+
+    return expression[starting_index : ending_index+1], is_float, ending_index
 
 
 def extract_string(expression, opening_index):
     if opening_index == len(expression) - 1:
         raise exceptions.ProjectorUnmatchedQuotesError
 
-    closing_index = expression.find('"', opening_index + 1)
+    closing_index = expression.find('"', opening_index+1)
 
     if closing_index == -1:
         raise exceptions.ProjectorUnmatchedQuotesError
 
-    return expression[opening_index + 1 : closing_index], closing_index
+    return expression[opening_index+1 : closing_index], closing_index
 
 
 
@@ -68,6 +88,24 @@ def tokenize_unitoken(character):
             return tokens.ModuloToken()
         case '=':
             return tokens.AssignmentToken()
+        case ',':
+            return tokens.CommaToken()
+        case '(':
+            return tokens.ParenthesesToken(False)
+        case ')':
+            return tokens.ParenthesesToken(True)
+        case '[':
+            return tokens.BracketsToken(False)
+        case ']':
+            return tokens.BracketsToken(True)
+        case '{':
+            return tokens.BracesToken(False)
+        case '}':
+            return tokens.BracesToken(True)
+        case '<':
+            return tokens.ChevronsToken(False)
+        case '>':
+            return tokens.ChevronsToken(True)
         case _:
             raise exceptions.ProjectorInvalidSymbolError(character)
 
@@ -93,33 +131,14 @@ def tokenize(raw_expression):
         elif raw_expression[index] == '"':
             str_value, index = extract_string(raw_expression, index)
             token_list.append(tokens.StringToken(str_value))
-        elif raw_expression[index] == ',':
-            token_list.append(tokens.CommaToken())
-        elif raw_expression[index] == '(':
-            token_list.append(tokens.ParenthesesToken(False))
-        elif raw_expression[index] == ')':
-            token_list.append(tokens.ParenthesesToken(True))
-        elif raw_expression[index] == '[':
-            token_list.append(tokens.BracketsToken(False))
-        elif raw_expression[index] == ']':
-            token_list.append(tokens.BracketsToken(True))
-        elif raw_expression[index] == '{':
-            token_list.append(tokens.BracesToken(False))
-        elif raw_expression[index] == '}':
-            token_list.append(tokens.BracesToken(True))
-        elif raw_expression[index] == '<':
-            token_list.append(tokens.ChevronsToken(False))
-        elif raw_expression[index] == '>':
-            token_list.append(tokens.ChevronsToken(True))
         elif raw_expression[index] in constants.DECIMAL_NUMBER_CHARACTERS:
-            number_str, index = match_extraction(
-                raw_expression, constants.DECIMAL_NUMBER_CHARACTERS, index
-            )
-            token_list.append(tokens.IntegerToken(int(number_str)))
+            number_str, is_float, index = extract_number(raw_expression, index)
+            if is_float:
+                token_list.append(tokens.FloatToken(float(number_str)))
+            else:
+                token_list.append(tokens.IntegerToken(int(number_str)))
         elif raw_expression[index] in constants.WORD_BEGIN_CHARACTERS:
-            word_str, index = match_extraction(
-                raw_expression, constants.WORD_CHARACTERS, index
-            )
+            word_str, index = extract_word(raw_expression, index)
             token_list.append(tokenize_word(word_str))
         else:
             token_list.append(tokenize_unitoken(raw_expression[index]))
@@ -153,11 +172,17 @@ def parse(token_list):
 
 
 
-def evaluate_single(raw_expression, debug_mode=False):
+def evaluate_single(raw_expression, debug_mode=False, tokenizer_only=False):
     try:
         token_list = tokenize(raw_expression)
+
+        if tokenizer_only:
+            for token in token_list:
+                print(token)
+
+            return None
+
         expression = parse(token_list)
-        # print(expression)  # temp
         return expression.evaluate()
     except exceptions.ProjectorError as error:
         if debug_mode:
@@ -166,6 +191,6 @@ def evaluate_single(raw_expression, debug_mode=False):
         print(error)
 
 
-def evaluate(raw_expression, debug_mode=False):
+def evaluate(raw_expression, debug_mode=False, tokenizer_only=False):
     for raw_subexpression in raw_expression.split(';'):
-        return evaluate_single(raw_subexpression, debug_mode)
+        return evaluate_single(raw_subexpression, debug_mode, tokenizer_only)
