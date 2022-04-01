@@ -1,5 +1,7 @@
 from string import ascii_letters, digits
 
+from projector import types
+
 
 
 
@@ -24,5 +26,5 @@ FLOWSTOP_KEYWORDS = ["exit", "stop", "quit"]
 ABSENT_SYMBOL_NAME = "<unknown>"
 
 # Typegroups
-NUMERICAL_TYPES = (int, float)
-VALUE_TYPES = NUMERICAL_TYPES + (str,)
+NUMERICAL_TYPES = (types.AbacusValue,)
+VALUE_TYPES = NUMERICAL_TYPES + (types.ScrollValue,)
