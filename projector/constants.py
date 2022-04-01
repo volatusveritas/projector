@@ -26,5 +26,5 @@ FLOWSTOP_KEYWORDS = ["exit", "stop", "quit"]
 ABSENT_SYMBOL_NAME = "<unknown>"
 
 # Typegroups
-NUMERICAL_TYPES = (types.AbacusValue,)
+NUMERICAL_TYPES = (types.AbacusValue, types.RationalValue, types.LeverValue)
 VALUE_TYPES = NUMERICAL_TYPES + (types.ScrollValue,)

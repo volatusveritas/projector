@@ -1,7 +1,8 @@
 import sys
 
-import projector.constants as constants
-import projector.exceptions as exceptions
+from projector import types
+from projector import constants
+from projector import exceptions
 
 
 
@@ -98,11 +99,11 @@ class AdditionExpression(OperationExpression):
         self._signature_operation_type = "Addition"
 
     def evaluate(self):
-        left_term = self.left.evaluate().raw_value
-        right_term = self.right.evaluate().raw_value
+        left_term = self.left.evaluate()
+        right_term = self.right.evaluate()
 
         if left_term is None:
-            left_term = 0
+            left_term = types.AbacusValue(0)
 
         self.validate_arguments(left_term, right_term)
 
