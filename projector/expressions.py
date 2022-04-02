@@ -76,17 +76,9 @@ class OperationExpression(Expression):
 
         self.left = left
         self.right = right
-        self.return_types = constants.NUMERICAL_TYPES
 
     def __repr__(self):
         return f"{super().__repr__()} [{self._signature_operation_type}]"
-
-    def validate_arguments(self, left, right):
-        if not isinstance(left, constants.NUMERICAL_TYPES):
-            raise exceptions.TypeError(type(left))
-
-        if not isinstance(right, constants.NUMERICAL_TYPES):
-            raise exceptions.TypeError(type(right))
 
     def evaluate(self):
         return self.left
@@ -105,8 +97,6 @@ class AdditionExpression(OperationExpression):
         if left_term is None:
             left_term = types.AbacusValue(0)
 
-        self.validate_arguments(left_term, right_term)
-
         return left_term + right_term
 
 
@@ -123,8 +113,6 @@ class SubtractionExpression(OperationExpression):
         if left_term is None:
             left_term = 0
 
-        self.validate_arguments(left_term, right_term)
-
         return left_term - right_term
 
 
@@ -138,8 +126,6 @@ class MultiplicationExpression(OperationExpression):
         left_factor = self.left.evaluate()
         right_factor = self.right.evaluate()
 
-        self.validate_arguments(left_factor, right_factor)
-
         return left_factor * right_factor
 
 
@@ -149,17 +135,9 @@ class DivisionExpression(OperationExpression):
 
         self._signature_operation_type = "Division"
 
-    def validate_arguments(self, left, right):
-        super().validate_arguments(left, right)
-
-        if not right:
-            raise exceptions.DivisionByZeroError
-
     def evaluate(self):
         dividend = self.left.evaluate()
         divisor = self.right.evaluate()
-
-        self.validate_arguments(dividend, divisor)
 
         return dividend // divisor
 
@@ -174,8 +152,6 @@ class ModuloExpression(DivisionExpression):
         dividend = self.left.evaluate()
         divisor = self.right.evaluate()
 
-        self.validate_arguments(dividend, divisor)
-
         return dividend % divisor
 
 
@@ -185,17 +161,8 @@ class AssignmentExpression(OperationExpression):
 
         self._signature_operation_type = "Assignment"
 
-    def validate_arguments(self, left, right):
-        if not isinstance(left, IdentifierExpression):
-            raise exceptions.TypeError(type(left))
-
-        if not isinstance(right, constants.VALUE_TYPES):
-            raise exceptions.TypeError(type(right))
-
     def evaluate(self):
         value = self.right.evaluate()
-
-        self.validate_arguments(self.left, value)
 
         _variable_bank[self.left.name] = value
 
