@@ -46,6 +46,15 @@ where `<options>` signifies ProjectOr's initialization options (initialize with
 `-h` or `--help` to learn more), although you can do without the `-OO -S`
 fragment if you wish (or use any Python options).
 
+I want to emphasize some special ProjectOr options:
+
+- `-d` or `--debug` makes ProjectOr not virtualize Python exceptions but rather
+  raise them in the standard manner, thus displaying the stack trace.
+- `-t` or `--token` only runs the tokenizer and prints the generated tokens'
+  display representation.
+- `-p` or `--parser` (to be implemented) only runs the parser and prints the
+  generated expressions' display representation.
+
 ## The ProjectOr Development Journal
 
 I try my best to find time to write a development journal, explaining the idea
