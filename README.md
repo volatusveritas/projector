@@ -45,3 +45,18 @@ python -OO -S -m projector <options>
 where `<options>` signifies ProjectOr's initialization options (initialize with
 `-h` or `--help` to learn more), although you can do without the `-OO -S`
 fragment if you wish (or use any Python options).
+
+## The ProjectOr Development Journal
+
+I try my best to find time to write a development journal, explaining the idea
+behind some of my decisions and how stuff came to be. If I ever write good
+documentation on ProjectOr, it will most probably explain all the hows and
+whens, but not the whys, which is to be addressed by the PDJ.
+
+Currently, you can find all the PDJ entries in the PDJ/ folder of this
+repository. In the future, PDJ's will be in their own repository, or will
+remain in the main repo but under a different branch made specifically for
+them.
+
+At the time no one besides the project founder is allowed to write PDJs for the
+main repo, but this could change in the future.
