@@ -46,7 +46,7 @@ where `<options>` signifies ProjectOr's initialization options (initialize with
 `-h` or `--help` to learn more), although you can do without the `-OO -S`
 fragment if you wish (or use any Python options).
 
-I want to emphasize some special ProjectOr options:
+I would like to emphasize some special ProjectOr options:
 
 - `-d` or `--debug` makes ProjectOr not virtualize Python exceptions but rather
   raise them in the standard manner, thus displaying the stack trace.
