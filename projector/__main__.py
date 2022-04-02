@@ -47,7 +47,7 @@ def start_file(filename):
                 if not result is None:
                     print(result)
     except:
-        raise exceptions.ProjectorCantOpenFileError(filename)
+        raise exceptions.CantOpenFileError(filename)
 
     sys.exit()
 
@@ -97,12 +97,12 @@ def consume_argument():
             projector_help()
         case "-e" | "--expression":
             if not len(sys.argv) > 1:
-                raise exceptions.ProjectorMissingInitArgError("expression")
+                raise exceptions.MissingInitArgError("expression")
 
             start_expression(sys.argv[1])
         case "-f" | "--file":
             if not len(sys.argv) > 1:
-                raise exceptions.ProjectorMissingInitArgError("file")
+                raise exceptions.MissingInitArgError("file")
 
             start_file(sys.argv[1])
         case _:

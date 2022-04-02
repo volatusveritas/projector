@@ -63,12 +63,12 @@ def extract_number(expression, starting_index):
 
 def extract_string(expression, opening_index):
     if opening_index == len(expression) - 1:
-        raise exceptions.ProjectorUnmatchedQuotesError
+        raise exceptions.UnmatchedQuotesError
 
     closing_index = expression.find('"', opening_index+1)
 
     if closing_index == -1:
-        raise exceptions.ProjectorUnmatchedQuotesError
+        raise exceptions.UnmatchedQuotesError
 
     return expression[opening_index+1 : closing_index], closing_index
 
@@ -107,7 +107,7 @@ def tokenize_unitoken(character):
         case '>':
             return tokens.ChevronsToken(True)
         case _:
-            raise exceptions.ProjectorInvalidSymbolError(character)
+            raise exceptions.InvalidSymbolError(character)
 
 
 def tokenize_word(word):
@@ -157,7 +157,7 @@ def parse(token_list):
 
     if operator_index == -1:
         if len(token_list) > 1:
-            raise exceptions.ProjectorOperatorAbsentError
+            raise exceptions.OperatorAbsentError
 
         return token_list[0].getexpr()
 
@@ -184,7 +184,7 @@ def evaluate_single(raw_expression, debug_mode=False, tokenizer_only=False):
 
         expression = parse(token_list)
         return expression.evaluate()
-    except exceptions.ProjectorError as error:
+    except exceptions.Error as error:
         if debug_mode:
             raise error
 

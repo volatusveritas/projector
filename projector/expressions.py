@@ -83,10 +83,10 @@ class OperationExpression(Expression):
 
     def validate_arguments(self, left, right):
         if not isinstance(left, constants.NUMERICAL_TYPES):
-            raise exceptions.ProjectorTypeError(type(left))
+            raise exceptions.TypeError(type(left))
 
         if not isinstance(right, constants.NUMERICAL_TYPES):
-            raise exceptions.ProjectorTypeError(type(right))
+            raise exceptions.TypeError(type(right))
 
     def evaluate(self):
         return self.left
@@ -153,7 +153,7 @@ class DivisionExpression(OperationExpression):
         super().validate_arguments(left, right)
 
         if not right:
-            raise exceptions.ProjectorDivisionByZeroError
+            raise exceptions.DivisionByZeroError
 
     def evaluate(self):
         dividend = self.left.evaluate()
@@ -187,10 +187,10 @@ class AssignmentExpression(OperationExpression):
 
     def validate_arguments(self, left, right):
         if not isinstance(left, IdentifierExpression):
-            raise exceptions.ProjectorTypeError(type(left))
+            raise exceptions.TypeError(type(left))
 
         if not isinstance(right, constants.VALUE_TYPES):
-            raise exceptions.ProjectorTypeError(type(right))
+            raise exceptions.TypeError(type(right))
 
     def evaluate(self):
         value = self.right.evaluate()
@@ -215,7 +215,7 @@ class IdentifierExpression(Expression):
 
     def evaluate(self):
         if not self.name in _variable_bank:
-            raise exceptions.ProjectorUndefinedNameError(self.name)
+            raise exceptions.UndefinedNameError(self.name)
 
         return _variable_bank[self.name]
 

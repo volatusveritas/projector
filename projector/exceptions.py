@@ -1,12 +1,12 @@
 from projector import constants
 
 
-class ProjectorError(Exception):
+class Error(Exception):
     def __str__(self):
         return "Unknown error"
 
 
-class ProjectorTypeError(ProjectorError):
+class TypeError(Error):
     def __init__(self, type=constants.ABSENT_SYMBOL_NAME):
         self.type = type
 
@@ -14,7 +14,7 @@ class ProjectorTypeError(ProjectorError):
         return f"Invalid type '{self.type}'"
 
 
-class ProjectorValueError(ProjectorError):
+class ValueError(Error):
     def __init__(self, value=constants.ABSENT_SYMBOL_NAME):
         self.value = value
 
@@ -22,12 +22,12 @@ class ProjectorValueError(ProjectorError):
         return f"Invalid value '{self.value}'"
 
 
-class ProjectorDivisionByZeroError(ProjectorError):
+class DivisionByZeroError(Error):
     def __str__(self):
         return "Division by zero"
 
 
-class ProjectorUndefinedNameError(ProjectorError):
+class UndefinedNameError(Error):
     def __init__(self, name=constants.ABSENT_SYMBOL_NAME):
         self.name = name
 
@@ -35,22 +35,22 @@ class ProjectorUndefinedNameError(ProjectorError):
         return f"Undefined name '{self.name}'"
 
 
-class ProjectorOperatorAbsentError(ProjectorError):
+class OperatorAbsentError(Error):
     def __str__(self):
         return "Operator absent"
 
 
-class ProjectorUnmatchedParenthesesError(ProjectorError):
+class UnmatchedParenthesesError(Error):
     def __str__(self):
         return "Unmatched parentheses"
 
 
-class ProjectorUnmatchedQuotesError(ProjectorError):
+class UnmatchedQuotesError(Error):
     def __str__(self):
         return "Unmatched quotes"
 
 
-class ProjectorInvalidSymbolError(ProjectorError):
+class InvalidSymbolError(Error):
     def __init__(self, symbol=constants.ABSENT_SYMBOL_NAME):
         self.symbol = symbol
 
@@ -58,7 +58,7 @@ class ProjectorInvalidSymbolError(ProjectorError):
         return f"Invalid symbol '{self.symbol}'"
 
 
-class ProjectorMissingInitArgError(ProjectorError):
+class MissingInitArgError(Error):
     def __init__(self, argument=constants.ABSENT_SYMBOL_NAME):
         self.argument = argument
 
@@ -66,7 +66,7 @@ class ProjectorMissingInitArgError(ProjectorError):
         return f"Missing initialization argument '{self.argument}'"
 
 
-class ProjectorCantOpenFileError(ProjectorError):
+class CantOpenFileError(Error):
     def __init__(self, file=constants.ABSENT_SYMBOL_NAME):
         self.file = file
 
