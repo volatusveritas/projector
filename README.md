@@ -1,3 +1,5 @@
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 # ProjectOr
 
 ProjectOr is a (work in progress) generative programming language intended for
@@ -15,11 +17,10 @@ capitalized 'O' at the end) is a reference to its expression-based nature.
 <!-- This comment is an MD028 fix-hack -->
 
 > **Streamer Note**: a lot of the production process and work being done on the
-> language will be streamed at [my Twitch
-> channel](https://twitch.tv/veritasvolatus). I do plan on sharing progress at
-> Twitter as well, although I'm not very fond of it. A seemingly better idea is
-> to make a YouTube series out of it (once I've decided on it the links for
-> either my Twitter or YouTube will be here).
+> language will be streamed at [my Twitch channel](https://twitch.tv/veritasvolatus).
+> I do plan on sharing progress at Twitter as well, although I'm not very fond
+> of it. A seemingly better idea is to make a YouTube series out of it (once
+> I've decided on it the links for either my Twitter or YouTube will be here).
 
 Key functionality goals (an incomplete list):
 
