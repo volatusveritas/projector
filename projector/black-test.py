@@ -6,4 +6,10 @@ def big_bananas_little_coconuts_humongous_strawberries(first_banana, second_coco
     return my_nice_array[0] == 3 or first_banana == 2 or second_coconut == "coconut" and third_strawberry == True
 
 
+x = [5,
+        667,
+    "eight",
+    10.0]
 print(big_bananas_little_coconuts_humongous_strawberries(3, "cake", True))
+print(         x )
+
