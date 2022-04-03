@@ -2,8 +2,6 @@ from projector import constants
 from projector import expressions
 
 
-
-
 class Token:
     def __init__(self):
         self._signature_token_type = "Null"

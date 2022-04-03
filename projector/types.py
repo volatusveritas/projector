@@ -1,8 +1,6 @@
 from projector import exceptions
 
 
-
-
 class Value:
     DEFAULT_VALUE = None
 

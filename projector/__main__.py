@@ -5,41 +5,36 @@ from projector import interpret
 from projector import meta
 
 
-
-
 debug_mode = False
 tokenizer_only = False
 
 
-
-
 def projector_help():
     print(
-"Usage: python -m [pyoptions] projector [projoptions] [initmethod]\n"
-"\n"
-"PyOptions: any number of Python options\n"
-"\n"
-"ProjOptions:\n"
-"  -d, --debug  start projector in debug mode\n"
-"  -t, --token  run only the tokenizer\n"
-"\n"
-"InitMethods:\n"
-"  -h, --help  show this help message and exit\n"
-"  [-f, --file] <file>  execute the contents of <file>\n"
-"  [-i, --interactive]  start interactive mode\n"
-"  -e, --expression <expressions>  execute <expressions>\n"
-"\n"
-"  If no initmethod is given, interactive mode is assumed\n"
+        "Usage: python -m [pyoptions] projector [projoptions] [initmethod]\n"
+        "\n"
+        "PyOptions: any number of Python options\n"
+        "\n"
+        "ProjOptions:\n"
+        "  -d, --debug  start projector in debug mode\n"
+        "  -t, --token  run only the tokenizer\n"
+        "\n"
+        "InitMethods:\n"
+        "  -h, --help  show this help message and exit\n"
+        "  [-f, --file] <file>  execute the contents of <file>\n"
+        "  [-i, --interactive]  start interactive mode\n"
+        "  -e, --expression <expressions>  execute <expressions>\n"
+        "\n"
+        "  If no initmethod is given, interactive mode is assumed\n"
     )
 
     sys.exit()
 
 
-
 def start_file(filename):
     try:
         with open(filename) as file:
-            for raw_expression in file.read().split(';'):
+            for raw_expression in file.read().split(";"):
                 result = interpret.evaluate(
                     raw_expression, debug_mode, tokenizer_only
                 )
@@ -59,7 +54,7 @@ def start_interactive():
     while True:
         raw_input = input(">>> ")
 
-        for raw_expression in raw_input.split(';'):
+        for raw_expression in raw_input.split(";"):
             result = interpret.evaluate(
                 raw_expression, debug_mode, tokenizer_only
             )
@@ -69,14 +64,13 @@ def start_interactive():
 
 
 def start_expression(full_expression):
-    for raw_expression in full_expression.split(';'):
+    for raw_expression in full_expression.split(";"):
         result = interpret.evaluate(raw_expression, debug_mode, tokenizer_only)
 
         if not result is None:
             print(result)
 
     sys.exit()
-
 
 
 def consume_argument():
@@ -109,12 +103,10 @@ def consume_argument():
             start_file(sys.argv[0])
 
 
-
-
 if __name__ == "__main__":
     del sys.argv[0]  # Ignore program name
 
-    while (True):
+    while True:
         if not sys.argv:
             start_interactive()
 

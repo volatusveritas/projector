@@ -1,8 +1,6 @@
 from string import ascii_letters, digits
 
 
-
-
 # Operator Precedence
 SMALLEST_PRECEDENCE = 1
 ASSIGNMENT_PRECEDENCE = 1
@@ -15,7 +13,7 @@ BIGGEST_PRECEDENCE = 3
 
 # Token Masks
 WHITESPACE_CHARACTERS = " \f\n\r\t\v"
-WORD_BEGIN_CHARACTERS = ascii_letters + '_'
+WORD_BEGIN_CHARACTERS = ascii_letters + "_"
 WORD_CHARACTERS = WORD_BEGIN_CHARACTERS + digits
 DECIMAL_NUMBER_CHARACTERS = digits
 FLOWSTOP_KEYWORDS = ["exit", "stop", "quit"]

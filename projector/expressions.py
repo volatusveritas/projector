@@ -5,11 +5,7 @@ from projector import constants
 from projector import exceptions
 
 
-
-
 _variable_bank = {}
-
-
 
 
 class Expression:

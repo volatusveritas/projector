@@ -4,16 +4,15 @@ from projector import expressions
 from projector import tokens
 
 
-
-
 def get_next_operator_index(token_list):
     operator_precedence = constants.BIGGEST_PRECEDENCE + 1
     operator_index = -1
 
-    index = len(token_list)-1
+    index = len(token_list) - 1
     for token in list(reversed(token_list)):
-        if (isinstance(token, tokens.OperatorToken) and
-            token.precedence < operator_precedence
+        if (
+            isinstance(token, tokens.OperatorToken)
+            and token.precedence < operator_precedence
         ):
             operator_index = index
             operator_precedence = token.precedence
@@ -27,29 +26,29 @@ def get_next_operator_index(token_list):
 
 
 def extract_word(expression, starting_index):
-    if starting_index == len(expression)-1:
+    if starting_index == len(expression) - 1:
         return expression[starting_index], starting_index
 
     ending_index = starting_index
 
-    for character in expression[starting_index+1 :]:
+    for character in expression[starting_index + 1 :]:
         if character not in constants.WORD_CHARACTERS:
             break
 
         ending_index += 1
 
-    return expression[starting_index : ending_index+1], ending_index
+    return expression[starting_index : ending_index + 1], ending_index
 
 
 def extract_number(expression, starting_index):
-    if starting_index == len(expression)-1:
+    if starting_index == len(expression) - 1:
         return expression[starting_index], False, starting_index
 
     ending_index = starting_index
     is_float = False
 
-    for character in expression[starting_index+1 :]:
-        if character == '.':
+    for character in expression[starting_index + 1 :]:
+        if character == ".":
             if is_float:
                 break
             is_float = True
@@ -58,53 +57,56 @@ def extract_number(expression, starting_index):
 
         ending_index += 1
 
-    return expression[starting_index : ending_index+1], is_float, ending_index
+    return (
+        expression[starting_index : ending_index + 1],
+        is_float,
+        ending_index,
+    )
 
 
 def extract_string(expression, opening_index):
     if opening_index == len(expression) - 1:
         raise exceptions.UnmatchedQuotesError
 
-    closing_index = expression.find('"', opening_index+1)
+    closing_index = expression.find('"', opening_index + 1)
 
     if closing_index == -1:
         raise exceptions.UnmatchedQuotesError
 
-    return expression[opening_index+1 : closing_index], closing_index
-
+    return expression[opening_index + 1 : closing_index], closing_index
 
 
 def tokenize_unitoken(character):
     match character:
-        case '+':
+        case "+":
             return tokens.AdditionToken()
-        case '-':
+        case "-":
             return tokens.SubtractionToken()
-        case '*':
+        case "*":
             return tokens.MultiplicationToken()
-        case '/':
+        case "/":
             return tokens.DivisionToken()
-        case '%':
+        case "%":
             return tokens.ModuloToken()
-        case '=':
+        case "=":
             return tokens.AssignmentToken()
-        case ',':
+        case ",":
             return tokens.CommaToken()
-        case '(':
+        case "(":
             return tokens.ParenthesesToken(False)
-        case ')':
+        case ")":
             return tokens.ParenthesesToken(True)
-        case '[':
+        case "[":
             return tokens.BracketsToken(False)
-        case ']':
+        case "]":
             return tokens.BracketsToken(True)
-        case '{':
+        case "{":
             return tokens.BracesToken(False)
-        case '}':
+        case "}":
             return tokens.BracesToken(True)
-        case '<':
+        case "<":
             return tokens.ChevronsToken(False)
-        case '>':
+        case ">":
             return tokens.ChevronsToken(True)
         case _:
             raise exceptions.InvalidSymbolError(character)
@@ -148,7 +150,6 @@ def tokenize(raw_expression):
     return token_list
 
 
-
 def parse(token_list):
     if not token_list:
         return expressions.Expression()
@@ -161,15 +162,13 @@ def parse(token_list):
 
         return token_list[0].getexpr()
 
-    before_operator = token_list[: operator_index]
-    after_operator = token_list[operator_index :]
+    before_operator = token_list[:operator_index]
+    after_operator = token_list[operator_index:]
     del after_operator[0]
 
     return token_list[operator_index].getexpr(
-        parse(before_operator),
-        parse(after_operator)
+        parse(before_operator), parse(after_operator)
     )
-
 
 
 def evaluate_single(raw_expression, debug_mode=False, tokenizer_only=False):
@@ -192,5 +191,5 @@ def evaluate_single(raw_expression, debug_mode=False, tokenizer_only=False):
 
 
 def evaluate(raw_expression, debug_mode=False, tokenizer_only=False):
-    for raw_subexpression in raw_expression.split(';'):
+    for raw_subexpression in raw_expression.split(";"):
         return evaluate_single(raw_subexpression, debug_mode, tokenizer_only)
