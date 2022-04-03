@@ -40,7 +40,7 @@ def extract_word(expression, starting_index):
     return expression[starting_index : ending_index + 1], ending_index
 
 
-def extract_number(expression, starting_index):
+def extract_number(expression, starting_index, negative):
     if starting_index == len(expression) - 1:
         return expression[starting_index], False, starting_index
 
@@ -52,13 +52,13 @@ def extract_number(expression, starting_index):
             if is_float:
                 break
             is_float = True
-        elif character not in constants.DECIMAL_NUMBER_CHARACTERS:
+        elif character not in constants.DECIMAL_CHARACTERS:
             break
 
         ending_index += 1
 
     return (
-        expression[starting_index : ending_index + 1],
+        ("-" * negative) + expression[starting_index : ending_index + 1],
         is_float,
         ending_index,
     )
@@ -133,8 +133,10 @@ def tokenize(raw_expression):
         elif raw_expression[index] == '"':
             str_value, index = extract_string(raw_expression, index)
             token_list.append(tokens.StringToken(str_value))
-        elif raw_expression[index] in constants.DECIMAL_NUMBER_CHARACTERS:
-            number_str, is_float, index = extract_number(raw_expression, index)
+        elif raw_expression[index] in constants.DECIMAL_CHARACTERS:
+            number_str, is_float, index = extract_number(
+                raw_expression, index, False
+            )
             if is_float:
                 token_list.append(tokens.FloatToken(float(number_str)))
             else:
@@ -142,6 +144,18 @@ def tokenize(raw_expression):
         elif raw_expression[index] in constants.WORD_BEGIN_CHARACTERS:
             word_str, index = extract_word(raw_expression, index)
             token_list.append(tokenize_word(word_str))
+        elif (
+            raw_expression[index] == "-"
+            and index < len(raw_expression) - 1
+            and raw_expression[index + 1] in constants.DECIMAL_CHARACTERS
+        ):
+            number_str, is_float, index = extract_number(
+                raw_expression, index + 1, True
+            )
+            if is_float:
+                token_list.append(tokens.FloatToken(float(number_str)))
+            else:
+                token_list.append(tokens.IntegerToken(int(number_str)))
         else:
             token_list.append(tokenize_unitoken(raw_expression[index]))
 
