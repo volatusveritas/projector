@@ -1,11 +1,12 @@
-name: Black (code formatter)
+name: Black
 
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  code-formatter:
-    name: Code formatter
+  format:
+    name: Code formatting
     runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -22,3 +23,16 @@ jobs:
           
       - name: Format code
         run: python -m black projector/
+        
+      - name: Check for changes
+        id: change-check
+        run: echo ::set-output name=changed::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+        
+      - name: Push reformatted code
+        if: steps.change-check.outputs.changed == "true"
+        run: |
+          git config --global user.name "volatusveritas"
+          git config --global user.email "volatusCoder@outlook.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git commit -am "(Workflow: Black) Auto Reformat"
+          git push
