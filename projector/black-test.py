@@ -12,4 +12,6 @@ x = [5,
     10.0]
 print(big_bananas_little_coconuts_humongous_strawberries(3, "cake", True))
 print(         x )
+print("Yet more\
+stupidity")
 
