@@ -1,3 +1,6 @@
+from projector import exceptions
+
+
 class Value:
     # (Temporary until I properly document this)
     #
@@ -31,6 +34,23 @@ class Value:
     def __str__(self):
         return str(self.raw_value)
 
+    def implicit_promote(self, other):
+        if other.FAMILY != self.FAMILY:
+            raise exceptions.TypeError(type(other))
+
+        if other.ORDER > self.ORDER:
+            if not hasattr(self, other.CONVERSION_SIGNATURE):
+                raise exceptions.TypeError(type(self))
+
+            return getattr(self, other.CONVERSION_SIGNATURE)(), other
+        elif other.ORDER < self.ORDER:
+            if not hasattr(other, self.CONVERSION_SIGNATURE):
+                raise exceptions.TypeError(type(other))
+
+            return self, getattr(other, self.CONVERSION_SIGNATURE)()
+
+        return self, other
+
     def to_lever(self):
         return LeverValue(False)
 
@@ -51,6 +71,40 @@ class AbacusValue(Value):
 
     def to_lever(self):
         return LeverValue(bool(self.raw_value))
+
+    def operate(self, other, operation_function, operation_name):
+        first, second = self.implicit_promote(other)
+
+        if type(first) == type(self):
+            return type(self)(operation_function(first, second))
+
+        if not hasattr(first, operation_name):
+            raise exceptions.TypeError(type(first))
+
+        return first.operate(second, operation_function, operation_name)
+
+    def add(self, other):
+        return self.operate(other, lambda x, y: x + y, "add")
+
+    def subtract(self, other):
+        return self.operate(other, lambda x, y: x - y, "subtract")
+
+    def multiply(self, other):
+        return self.operate(other, lambda x, y: x * y, "multiply")
+
+    def divide(self, other):
+        first, second = self.implicit_promote(other)
+
+        if type(first) == type(self):
+            if not second.raw_value:
+                raise exceptions.DivisionByZeroError
+
+            return AbacusValue(first.raw_value / second.raw_value)
+
+        if not hasattr(first, "divide"):
+            raise exceptions.TypeError(type(first))
+
+        return first.divide(second)
 
 
 class RationalValue(Value):

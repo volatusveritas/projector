@@ -1,7 +1,6 @@
 import sys
 
 from projector import types
-from projector import constants
 from projector import exceptions
 
 
@@ -90,10 +89,10 @@ class AdditionExpression(OperationExpression):
         left_term = self.left.evaluate()
         right_term = self.right.evaluate()
 
-        if left_term is None:
-            left_term = types.AbacusValue(0)
+        if not hasattr(left_term, "add"):
+            raise TypeError(type(left_term))
 
-        return left_term + right_term
+        return left_term.add(right_term)
 
 
 class SubtractionExpression(OperationExpression):
