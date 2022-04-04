@@ -11,7 +11,7 @@ class TypeError(Error):
         self.type = type
 
     def __str__(self):
-        return f"Invalid type '{self.type}'"
+        return f"Invalid type '{str(self.type)}'"
 
 
 class ValueError(Error):
