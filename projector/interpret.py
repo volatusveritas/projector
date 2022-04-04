@@ -197,7 +197,7 @@ def evaluate_single(raw_expression, debug_mode=False, tokenizer_only=False):
 
         expression = parse(token_list)
         return expression.evaluate()
-    except exceptions.Error as error:
+    except Exception as error:
         if debug_mode:
             raise error
 
