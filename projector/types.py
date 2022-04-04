@@ -1,3 +1,6 @@
+from projector import exceptions
+
+
 class Value:
     # (Temporary until I properly document this)
     #
@@ -33,16 +36,16 @@ class Value:
 
     def implicit_promote(self, other):
         if other.FAMILY != self.FAMILY:
-            raise TypeError(type(other))
+            raise exceptions.TypeError(type(other))
 
         if other.ORDER > self.ORDER:
             if not hasattr(self, other.CONVERSION_SIGNATURE):
-                raise TypeError(type(self))
+                raise exceptions.TypeError(type(self))
 
             return getattr(self, other.CONVERSION_SIGNATURE)(), other
         elif other.ORDER < self.ORDER:
             if not hasattr(other, self.CONVERSION_SIGNATURE):
-                raise TypeError(type(other))
+                raise exceptions.TypeError(type(other))
 
             return self, getattr(other, self.CONVERSION_SIGNATURE)()
 
@@ -52,10 +55,10 @@ class Value:
         first, second = self.implicit_promote(other)
 
         if type(first) == type(self):
-            return type(self)(operation_function(first, second))
+            return type(self)(operation_function(first.raw_value, second.raw_value))
 
         if not hasattr(first, operation_name):
-            raise TypeError(type(first))
+            raise exceptions.TypeError(type(first))
 
         return first.operate(second, operation_function, operation_name)
 

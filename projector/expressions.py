@@ -1,5 +1,7 @@
 import sys
 
+from projector import exceptions
+
 
 _variable_bank = {}
 
@@ -168,7 +170,7 @@ class IdentifierExpression(Expression):
 
     def evaluate(self):
         if not self.name in _variable_bank:
-            raise NameError(self.name)
+            raise exceptions.UndefinedNameError(self.name)
 
         return _variable_bank[self.name]
 

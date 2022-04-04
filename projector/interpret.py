@@ -2,6 +2,7 @@ from projector import constants
 from projector import exceptions
 from projector import expressions
 from projector import tokens
+from projector import types
 
 
 def get_next_operator_index(token_list):
@@ -116,9 +117,9 @@ def tokenize_word(word):
     if word in constants.FLOWSTOP_KEYWORDS:
         return tokens.BreakToken()
     elif word == "on":
-        return tokens.BoolToken(True)
+        return tokens.LeverToken(types.LeverValue(True))
     elif word == "off":
-        return tokens.BoolToken(False)
+        return tokens.LeverToken(types.LeverValue(False))
     else:
         return tokens.IdentifierToken(word)
 
@@ -132,15 +133,15 @@ def tokenize(raw_expression):
             pass
         elif raw_expression[index] == '"':
             str_value, index = extract_string(raw_expression, index)
-            token_list.append(tokens.StringToken(str_value))
+            token_list.append(tokens.ScrollToken(types.ScrollValue(str_value)))
         elif raw_expression[index] in constants.DECIMAL_CHARACTERS:
             number_str, is_float, index = extract_number(
                 raw_expression, index, False
             )
             if is_float:
-                token_list.append(tokens.FloatToken(float(number_str)))
+                token_list.append(tokens.RationalToken(types.RationalValue(float(number_str))))
             else:
-                token_list.append(tokens.IntegerToken(int(number_str)))
+                token_list.append(tokens.AbacusToken(types.AbacusValue(int(number_str))))
         elif raw_expression[index] in constants.WORD_BEGIN_CHARACTERS:
             word_str, index = extract_word(raw_expression, index)
             token_list.append(tokenize_word(word_str))
@@ -153,9 +154,9 @@ def tokenize(raw_expression):
                 raw_expression, index + 1, True
             )
             if is_float:
-                token_list.append(tokens.FloatToken(float(number_str)))
+                token_list.append(tokens.RationalToken(types.RationalValue(-float(number_str))))
             else:
-                token_list.append(tokens.IntegerToken(int(number_str)))
+                token_list.append(tokens.AbacusToken(types.AbacusValue(-int(number_str))))
         else:
             token_list.append(tokenize_unitoken(raw_expression[index]))
 
