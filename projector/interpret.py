@@ -139,9 +139,15 @@ def tokenize(raw_expression):
                 raw_expression, index, False
             )
             if is_float:
-                token_list.append(tokens.RationalToken(types.RationalValue(float(number_str))))
+                token_list.append(
+                    tokens.RationalToken(
+                        types.RationalValue(float(number_str))
+                    )
+                )
             else:
-                token_list.append(tokens.AbacusToken(types.AbacusValue(int(number_str))))
+                token_list.append(
+                    tokens.AbacusToken(types.AbacusValue(int(number_str)))
+                )
         elif raw_expression[index] in constants.WORD_BEGIN_CHARACTERS:
             word_str, index = extract_word(raw_expression, index)
             token_list.append(tokenize_word(word_str))
@@ -154,9 +160,15 @@ def tokenize(raw_expression):
                 raw_expression, index + 1, True
             )
             if is_float:
-                token_list.append(tokens.RationalToken(types.RationalValue(-float(number_str))))
+                token_list.append(
+                    tokens.RationalToken(
+                        types.RationalValue(-float(number_str))
+                    )
+                )
             else:
-                token_list.append(tokens.AbacusToken(types.AbacusValue(-int(number_str))))
+                token_list.append(
+                    tokens.AbacusToken(types.AbacusValue(-int(number_str)))
+                )
         else:
             token_list.append(tokenize_unitoken(raw_expression[index]))
 

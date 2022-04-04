@@ -55,7 +55,9 @@ class Value:
         first, second = self.implicit_promote(other)
 
         if type(first) == type(self):
-            return type(self)(operation_function(first.raw_value, second.raw_value))
+            return type(self)(
+                operation_function(first.raw_value, second.raw_value)
+            )
 
         if not hasattr(first, operation_name):
             raise exceptions.TypeError(type(first))
