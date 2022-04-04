@@ -36,16 +36,16 @@ class Value:
 
     def implicit_promote(self, other):
         if other.FAMILY != self.FAMILY:
-            raise exceptions.TypeError(type(other))
+            raise exceptions.TypeError(repr(other))
 
         if other.ORDER > self.ORDER:
             if not hasattr(self, other.CONVERSION_SIGNATURE):
-                raise exceptions.TypeError(type(self))
+                raise exceptions.TypeError(repr(self))
 
             return getattr(self, other.CONVERSION_SIGNATURE)(), other
         elif other.ORDER < self.ORDER:
             if not hasattr(other, self.CONVERSION_SIGNATURE):
-                raise exceptions.TypeError(type(other))
+                raise exceptions.TypeError(repr(other))
 
             return self, getattr(other, self.CONVERSION_SIGNATURE)()
 
@@ -60,7 +60,7 @@ class Value:
             )
 
         if not hasattr(first, operation_name):
-            raise exceptions.TypeError(type(first))
+            raise exceptions.TypeError(repr(first))
 
         return first.operate(second, operation_function, operation_name)
 
