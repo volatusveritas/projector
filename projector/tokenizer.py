@@ -14,7 +14,9 @@ class Tokenizer:
     def tokenize(self):
         while self.idx < len(self.string):
             self.tokenize_next()
-            self.next()
+
+            self.idx += 1
+            self.current = self.string[self.idx]
 
         return self.token_list
 
@@ -24,10 +26,8 @@ class Tokenizer:
 
         if self.current in constants.STRING_DELIMITERS:
             self.token_list.append(tokens.Scroll(self.extract_string()))
-
         elif self.current in constants.WORD_BEGIN_CHARACTERS:
             self.tokenize_word()
-
         else:
             self.tokenize_unitoken()
 
@@ -83,6 +83,28 @@ class Tokenizer:
             case _:
                 raise exceptions.InvalidSymbolError(self.current)
 
+    def extract_number(self, negative):
+        if self.idx == len(self.string) - 1:
+            self.last_was_value = True
+            return self.string[self.idx]
+
+        start_idx = self.idx
+        end_idx = self.idx
+        is_float = False
+
+        for character in self.string[start_idx + 1 :]:
+            if character == ".":
+                if is_float:
+                    break
+
+                is_float = True
+            elif character not in constants.DECIMAL_CHARACTERS:
+                break
+
+            end_idx += 1
+
+        return self.string[start_idx : end_idx + 1], is_float
+
     def extract_string(self):
         if self.idx == len(self.string) - 1:
             raise exceptions.UnmatchedQuotesError
@@ -114,7 +136,3 @@ class Tokenizer:
         self.idx = end_idx
 
         return self.string[start_idx : end_idx + 1]
-
-    def next(self):
-        self.idx += 1
-        self.current = self.string[self.idx]
