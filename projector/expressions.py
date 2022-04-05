@@ -1,6 +1,5 @@
 import sys
 
-from projector import types
 from projector import exceptions
 
 
@@ -89,9 +88,6 @@ class AdditionExpression(OperationExpression):
         left_term = self.left.evaluate()
         right_term = self.right.evaluate()
 
-        if not hasattr(left_term, "add"):
-            raise TypeError(type(left_term))
-
         return left_term.add(right_term)
 
 
@@ -105,10 +101,7 @@ class SubtractionExpression(OperationExpression):
         left_term = self.left.evaluate()
         right_term = self.right.evaluate()
 
-        if left_term is None:
-            left_term = 0
-
-        return left_term - right_term
+        return left_term.subtract(right_term)
 
 
 class MultiplicationExpression(OperationExpression):
@@ -121,7 +114,7 @@ class MultiplicationExpression(OperationExpression):
         left_factor = self.left.evaluate()
         right_factor = self.right.evaluate()
 
-        return left_factor * right_factor
+        return left_factor.multiply(right_factor)
 
 
 class DivisionExpression(OperationExpression):
@@ -134,7 +127,7 @@ class DivisionExpression(OperationExpression):
         dividend = self.left.evaluate()
         divisor = self.right.evaluate()
 
-        return dividend // divisor
+        return dividend.divide(divisor)
 
 
 class ModuloExpression(DivisionExpression):
@@ -147,7 +140,7 @@ class ModuloExpression(DivisionExpression):
         dividend = self.left.evaluate()
         divisor = self.right.evaluate()
 
-        return dividend % divisor
+        return dividend.modulo(divisor)
 
 
 class AssignmentExpression(OperationExpression):

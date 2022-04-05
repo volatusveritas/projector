@@ -89,41 +89,41 @@ class ValueToken(Token):
         return expressions.ValueExpression(self.value)
 
 
-class IntegerToken(ValueToken):
-    def __init__(self, value):
-        super().__init__(value)
+class AbacusToken(ValueToken):
+    def __init__(self, abacus_value):
+        super().__init__(abacus_value)
 
-        self._signature_value_type = "Integer"
+        self._signature_value_type = "Abacus"
 
     def getexpr(self):
         return expressions.AbacusExpression(self.value)
 
 
-class FloatToken(ValueToken):
-    def __init__(self, value):
-        super().__init__(value)
+class RationalToken(ValueToken):
+    def __init__(self, rational_value):
+        super().__init__(rational_value)
 
-        self._signature_value_type = "Float"
+        self._signature_value_type = "Rational"
 
     def getexpr(self):
         return expressions.RationalExpression(self.value)
 
 
-class StringToken(ValueToken):
-    def __init__(self, value):
-        super().__init__(value)
+class ScrollToken(ValueToken):
+    def __init__(self, scroll_value):
+        super().__init__(scroll_value)
 
-        self._signature_value_type = "String"
+        self._signature_value_type = "Scroll"
 
     def getexpr(self):
         return expressions.ScrollExpression(self.value)
 
 
-class BoolToken(ValueToken):
-    def __init__(self, value):
-        super().__init__(value)
+class LeverToken(ValueToken):
+    def __init__(self, lever_value):
+        super().__init__(lever_value)
 
-        self._signature_value_type = "Bool"
+        self._signature_value_type = "Lever"
 
     def getexpr(self):
         return expressions.LeverExpression(self.value)

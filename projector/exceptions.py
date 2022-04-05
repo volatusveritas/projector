@@ -7,11 +7,11 @@ class Error(Exception):
 
 
 class TypeError(Error):
-    def __init__(self, type=constants.ABSENT_SYMBOL_NAME):
-        self.type = type
+    def __init__(self, typename=constants.ABSENT_SYMBOL_NAME):
+        self.typename = typename
 
     def __str__(self):
-        return f"Invalid type '{self.type}'"
+        return f"Invalid type '{self.typename}'"
 
 
 class ValueError(Error):

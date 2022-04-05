@@ -36,20 +36,33 @@ class Value:
 
     def implicit_promote(self, other):
         if other.FAMILY != self.FAMILY:
-            raise exceptions.TypeError(type(other))
+            raise exceptions.TypeError(repr(other))
 
         if other.ORDER > self.ORDER:
             if not hasattr(self, other.CONVERSION_SIGNATURE):
-                raise exceptions.TypeError(type(self))
+                raise exceptions.TypeError(repr(self))
 
             return getattr(self, other.CONVERSION_SIGNATURE)(), other
         elif other.ORDER < self.ORDER:
             if not hasattr(other, self.CONVERSION_SIGNATURE):
-                raise exceptions.TypeError(type(other))
+                raise exceptions.TypeError(repr(other))
 
             return self, getattr(other, self.CONVERSION_SIGNATURE)()
 
         return self, other
+
+    def operate(self, other, operation_function, operation_name):
+        first, second = self.implicit_promote(other)
+
+        if type(first) == type(self):
+            return type(self)(
+                operation_function(first.raw_value, second.raw_value)
+            )
+
+        if not hasattr(first, operation_name):
+            raise exceptions.TypeError(repr(first))
+
+        return first.operate(second, operation_function, operation_name)
 
     def to_lever(self):
         return LeverValue(False)
@@ -72,17 +85,6 @@ class AbacusValue(Value):
     def to_lever(self):
         return LeverValue(bool(self.raw_value))
 
-    def operate(self, other, operation_function, operation_name):
-        first, second = self.implicit_promote(other)
-
-        if type(first) == type(self):
-            return type(self)(operation_function(first, second))
-
-        if not hasattr(first, operation_name):
-            raise exceptions.TypeError(type(first))
-
-        return first.operate(second, operation_function, operation_name)
-
     def add(self, other):
         return self.operate(other, lambda x, y: x + y, "add")
 
@@ -93,18 +95,10 @@ class AbacusValue(Value):
         return self.operate(other, lambda x, y: x * y, "multiply")
 
     def divide(self, other):
-        first, second = self.implicit_promote(other)
+        return self.operate(other, lambda x, y: x // y, "divide")
 
-        if type(first) == type(self):
-            if not second.raw_value:
-                raise exceptions.DivisionByZeroError
-
-            return AbacusValue(first.raw_value / second.raw_value)
-
-        if not hasattr(first, "divide"):
-            raise exceptions.TypeError(type(first))
-
-        return first.divide(second)
+    def modulo(self, other):
+        return self.operate(other, lambda x, y: x % y, "modulo")
 
 
 class RationalValue(Value):
@@ -123,6 +117,18 @@ class RationalValue(Value):
 
     def to_lever(self):
         return LeverValue(bool(self.raw_value))
+
+    def add(self, other):
+        return self.operate(other, lambda x, y: x + y, "add")
+
+    def subtract(self, other):
+        return self.operate(other, lambda x, y: x - y, "subtract")
+
+    def multiply(self, other):
+        return self.operate(other, lambda x, y: x * y, "multiply")
+
+    def divide(self, other):
+        return self.operate(other, lambda x, y: x // y, "divide")
 
 
 class LeverValue(Value):

@@ -1,2 +1,2 @@
-VERSION = "0.27.1-broken"
+VERSION = "0.29.2"
 RELEASE_YEAR = "2022"
