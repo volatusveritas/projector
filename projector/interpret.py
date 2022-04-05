@@ -130,8 +130,10 @@ def tokenize(raw_expression):
     index = 0
     while index < len(raw_expression):
         if raw_expression[index] in constants.WHITESPACE_CHARACTERS:
-            pass
-        elif raw_expression[index] == '"':
+            index += 1
+            continue
+
+        if raw_expression[index] in constants.STRING_DELIMITERS:
             str_value, index = extract_string(raw_expression, index)
             token_list.append(tokens.ScrollToken(types.ScrollValue(str_value)))
         elif raw_expression[index] in constants.DECIMAL_CHARACTERS:
