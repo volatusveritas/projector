@@ -57,9 +57,7 @@ def tokenize(raw_expression):
         )
         if is_float:
             token_list.append(
-                tokens.RationalToken(
-                    types.RationalValue(float(number_str))
-                )
+                tokens.RationalToken(types.RationalValue(float(number_str)))
             )
         else:
             token_list.append(
@@ -75,9 +73,7 @@ def tokenize(raw_expression):
         )
         if is_float:
             token_list.append(
-                tokens.RationalToken(
-                    types.RationalValue(-float(number_str))
-                )
+                tokens.RationalToken(types.RationalValue(-float(number_str)))
             )
         else:
             token_list.append(
