@@ -3,7 +3,6 @@ from projector import exceptions
 
 class Value:
     # (Temporary until I properly document this)
-    #
     # DEFAULT_VALUE -- the default (or null) value of this type.
     #
     # CONVERSION_SIGNATURE (default: to_<type_name_in_lowercase>) -- the name
@@ -65,25 +64,27 @@ class Value:
         return first.operate(second, operation_function, operation_name)
 
     def to_lever(self):
-        return LeverValue(False)
+        return Lever(False)
 
 
-class AbacusValue(Value):
+class Abacus(Value):
     DEFAULT_VALUE = 0
     CONVERSION_SIGNATURE = "to_abacus"
     FAMILY = "Integer"
     ORDER = 0
 
     def __init__(self, initial_value=DEFAULT_VALUE):
-        super().__init__(initial_value)
+        super().__init__()
 
         self._signature_value_type = "Abacus"
 
+        self.raw_value = int(initial_value)
+
     def to_rational(self):
-        return RationalValue(float(self.raw_value))
+        return Rational(self.raw_value)
 
     def to_lever(self):
-        return LeverValue(bool(self.raw_value))
+        return Lever(self.raw_value)
 
     def add(self, other):
         return self.operate(other, lambda x, y: x + y, "add")
@@ -101,22 +102,24 @@ class AbacusValue(Value):
         return self.operate(other, lambda x, y: x % y, "modulo")
 
 
-class RationalValue(Value):
+class Rational(Value):
     DEFAULT_VALUE = 0.0
     CONVERSION_SIGNATURE = "to_rational"
     FAMILY = "Floating"
     ORDER = 0
 
     def __init__(self, initial_value=DEFAULT_VALUE):
-        super().__init__(initial_value)
+        super().__init__()
 
         self._signature_value_type = "Rational"
 
+        self.raw_value = float(initial_value)
+
     def to_abacus(self):
-        return AbacusValue(int(self.raw_value))
+        return Abacus(int(self.raw_value))
 
     def to_lever(self):
-        return LeverValue(bool(self.raw_value))
+        return Lever(bool(self.raw_value))
 
     def add(self, other):
         return self.operate(other, lambda x, y: x + y, "add")
@@ -131,49 +134,55 @@ class RationalValue(Value):
         return self.operate(other, lambda x, y: x // y, "divide")
 
 
-class LeverValue(Value):
+class Lever(Value):
     DEFAULT_VALUE = False
     CONVERSION_SIGNATURE = "to_lever"
     FAMILY = "Logical"
     ORDER = 0
 
     def __init__(self, initial_value=DEFAULT_VALUE):
-        super().__init__(initial_value)
+        super().__init__()
 
         self._signature_value_type = "Lever"
 
+        self.raw_value = bool(initial_value)
+
     def to_abacus(self):
-        return AbacusValue(int(self.raw_value))
+        return Abacus(int(self.raw_value))
 
     def to_rational(self):
-        return RationalValue(int(self.raw_value))
+        return Rational(int(self.raw_value))
 
 
-class ScrollValue(Value):
+class Scroll(Value):
     DEFAULT_VALUE = ""
     CONVERSION_SIGNATURE = "to_scroll"
     FAMILY = "Textual"
     ORDER = 0
 
     def __init__(self, initial_value=DEFAULT_VALUE):
-        super().__init__(initial_value)
+        super().__init__()
 
         self._signature_value_type = "Scroll"
 
+        self.raw_value = str(initial_value)
+
     def to_lever(self):
-        return LeverValue(bool(self.raw_value))
+        return Lever(bool(self.raw_value))
 
 
-class ChestValue(Value):
+class Chest(Value):
     DEFAULT_VALUE = []
     CONVERSION_SIGNATURE = "to_chest"
     FAMILY = "Sequential"
     ORDER = 0
 
     def __init__(self, initial_value=[]):
-        super().__init__(initial_value)
+        super().__init__()
 
         self._signature_value_type = "Chest"
 
+        self.raw_value = list(initial_value)
+
     def to_lever(self):
-        return LeverValue(bool(self.raw_value))
+        return Lever(bool(self.raw_value))
