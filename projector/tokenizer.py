@@ -28,6 +28,8 @@ class Tokenizer:
             self.token_list.append(tokens.Scroll(self.extract_string()))
         elif self.current in constants.WORD_BEGIN_CHARACTERS:
             self.tokenize_word()
+        elif self.current in constants.DECIMAL_CHARACTERS:
+            self.tokenize_number()
         else:
             self.tokenize_unitoken()
 
@@ -48,11 +50,19 @@ class Tokenizer:
 
             self.last_was_value = True
 
+    def tokenize_number(self):
+        number_str, is_float = self.extract_number(negative=False)
+
     def tokenize_unitoken(self):
         match self.current:
             case "+":
                 self.token_list.append(tokens.Addition())
             case "-":
+                if (
+                    self.idx < len(self.string) - 1
+                    and self.string[self.idx + 1] in constants.DECIMAL_CHARACTERS
+                ):
+                    pass
                 self.token_list.append(tokens.Subtraction())
             case "*":
                 self.token_list.append(tokens.Multiplication())
@@ -103,7 +113,7 @@ class Tokenizer:
 
             end_idx += 1
 
-        return self.string[start_idx : end_idx + 1], is_float
+        return "-"*negative + self.string[start_idx : end_idx + 1], is_float
 
     def extract_string(self):
         if self.idx == len(self.string) - 1:
