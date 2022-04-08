@@ -7,8 +7,8 @@ syntax case match
 
 
 syntax keyword projBool on off
-syntax keyword projKeyword of as
-syntax keyword projType abacus rational scroll lever chest chain backpack
+syntax keyword projKeyword of as to
+syntax keyword projType abacus rational scroll lever chest chain dictionary
 
 syntax match projComment /--.*$/
 syntax match projIdentifier /[a-zA-Z_][a-zA-Z0-9_]*/
