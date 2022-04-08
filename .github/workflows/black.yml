@@ -13,7 +13,7 @@ jobs:
       - name: Black
         uses: psf/black@stable
         with:
-          options: "--line-length 79 --target-version py310"
+          options: "--line-length 79"
           src: "./projector"
           
       - name: Add and Commit
