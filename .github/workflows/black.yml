@@ -11,9 +11,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Black
-        uses: psf/black@stable
+        uses: psf/black@latest
         with:
-          options: "--line-length 79"
+          options: "--line-length 79 --target-version py310"
           src: "./projector"
           
       - name: Add and Commit
