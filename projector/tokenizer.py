@@ -1,4 +1,4 @@
-from projector import constants
+from projector.constants import *
 from projector import exceptions
 from projector import tokens
 
@@ -21,14 +21,14 @@ class Tokenizer:
         return self.token_list
 
     def tokenize_next(self):
-        if self.current in constants.WHITESPACE_CHARACTERS:
+        if self.current in WHITESPACE_CHARACTERS:
             return
 
-        if self.current in constants.STRING_DELIMITERS:
+        if self.current in STRING_DELIMITERS:
             self.token_list.append(tokens.Scroll(self.extract_string()))
-        elif self.current in constants.WORD_BEGIN_CHARACTERS:
+        elif self.current in WORD_BEGIN_CHARACTERS:
             self.tokenize_word()
-        elif self.current in constants.DECIMAL_CHARACTERS:
+        elif self.current in DECIMAL_CHARACTERS:
             self.tokenize_number()
         else:
             self.tokenize_unitoken()
@@ -36,7 +36,7 @@ class Tokenizer:
     def tokenize_word(self):
         word = self.extract_word()
 
-        if word in constants.FLOWSTOP_KEYWORDS:
+        if word in FLOWSTOP_KEYWORDS:
             self.last_was_value = False
             self.token_list.append(tokens.Break())
         else:
@@ -58,9 +58,11 @@ class Tokenizer:
             case "+":
                 self.token_list.append(tokens.Addition())
             case "-":
-                if (
+                if self.last_was_value:
+                    self.token_list.append(tokens.Negation())
+                elif (
                     self.idx < len(self.string) - 1
-                    and self.string[self.idx + 1] in constants.DECIMAL_CHARACTERS
+                    and self.string[self.idx + 1] in DECIMAL_CHARACTERS
                 ):
                     pass
                 self.token_list.append(tokens.Subtraction())
@@ -108,7 +110,7 @@ class Tokenizer:
                     break
 
                 is_float = True
-            elif character not in constants.DECIMAL_CHARACTERS:
+            elif character not in DECIMAL_CHARACTERS:
                 break
 
             end_idx += 1
@@ -138,7 +140,7 @@ class Tokenizer:
         end_idx = self.idx
 
         for character in self.string[start_idx + 1 :]:
-            if character not in constants.WORD_CHARACTERS:
+            if character not in WORD_CHARACTERS:
                 break
 
             end_idx += 1

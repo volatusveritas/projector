@@ -1,49 +1,37 @@
-from projector import constants
-from projector import expressions
-from projector import types
+from projector.constants import *
 
 
 class Token:
-    def __init__(self):
-        self._signature_token_type = "Null"
+    _signature_token_type: str = "Null"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Token: {self._signature_token_type}>"
-
-    def getexpr(self):
-        return expressions.Expression()
 
 
 class SingleSymbol(Token):
-    def __init__(self):
-        self._signature_token_type = "SingleSymbol"
-        self._signature_symbol_type = "None"
+    _signature_token_type = "SingleSymbol"
+    _signature_symbol_type: str = "None"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{super().__repr__()} [{self._signature_symbol_type}]"
 
 
 class Comma(SingleSymbol):
-    def __init__(self):
-        super().__init__()
-
-        self._signature_symbol_type = "Comma"
+    _signature_symbol_type = "Comma"
 
 
 class Colon(SingleSymbol):
-    def __init__(self):
-        super().__init__()
-
-        self._signature_symbol_type = "Colon"
+    _signature_symbol_type = "Colon"
 
 
 class SymbolCouple(Token):
-    def __init__(self, closing=False):
-        self._signature_token_type = "SymbolCouple"
-        self._signature_couple_type = "None"
-        self._signature_delim_type = "Close" if closing else "Open"
+    _signature_token_type = "SymbolCouple"
+    _signature_couple_type: str = "None"
 
-    def __repr__(self):
+    def __init__(self, closing:bool=False) -> None:
+        self._signature_delim_type: str = "Close" if closing else "Open"
+
+    def __repr__(self) -> str:
         return (
             f"{super().__repr__()}"
             f" [{self._signature_couple_type}]"
@@ -52,39 +40,39 @@ class SymbolCouple(Token):
 
 
 class Parentheses(SymbolCouple):
-    def __init__(self, closing=False):
-        super().__init__(closing)
+    _signature_couple_type = "Parentheses"
 
-        self._signature_couple_type = "Parentheses"
+    def __init__(self, closing:bool=False):
+        super().__init__(closing)
 
 
 class Brackets(SymbolCouple):
-    def __init__(self, closing=False):
-        super().__init__(closing)
+    _signature_couple_type = "Brackets"
 
-        self._signature_couple_type = "Brackets"
+    def __init__(self, closing:bool=False) -> None:
+        super().__init__(closing)
 
 
 class Braces(SymbolCouple):
-    def __init__(self, closing=False):
-        super().__init__(closing)
+    _signature_couple_type = "Braces"
 
-        self._signature_couple_type = "Braces"
+    def __init__(self, closing:bool=False) -> None:
+        super().__init__(closing)
 
 
 class Chevrons(SymbolCouple):
-    def __init__(self, closing=False):
-        super().__init__(closing)
+    _signature_couple_type = "Chevrons"
 
-        self._signature_couple_type = "Chevrons"
+    def __init__(self, closing:bool=False):
+        super().__init__(closing)
 
 
 class Value(Token):
-    def __init__(self, refval):
-        self._signature_token_type = "Value"
-        self._signature_value_type = "None"
+    _signature_token_type = "Value"
+    _signature_value_type: str = "None"
 
-        self.refval = refval
+    def __init__(self, refval:str) -> None:
+        self.refval: str = refval
 
     def __repr__(self):
         return (
@@ -93,56 +81,41 @@ class Value(Token):
             f" {self.refval}"
         )
 
-    def getexpr(self):
-        return expressions.ValueExpression(types.Value())
 
+class Integer(Value):
+    _signature_value_type = "Integer"
 
-class Abacus(Value):
-    def __init__(self, refval):
+    def __init__(self, refval:str) -> None:
         super().__init__(refval)
-
-        self._signature_value_type = "Abacus"
-
-    def getexpr(self):
-        return expressions.AbacusExpression(types.Abacus(self.refval))
 
 
 class Rational(Value):
-    def __init__(self, refval):
+    _signature_value_type = "Float"
+
+    def __init__(self, refval:str) -> None:
         super().__init__(refval)
 
-        self._signature_value_type = "Rational"
 
-    def getexpr(self):
-        return expressions.RationalExpression(types.Rational(self.refval))
+class Text(Value):
+    _signature_value_type = "Text"
 
-
-class Scroll(Value):
-    def __init__(self, refval):
+    def __init__(self, refval:str) -> None:
         super().__init__(refval)
 
-        self._signature_value_type = "Scroll"
 
-    def getexpr(self):
-        return expressions.ScrollExpression(types.Scroll(self.refval))
+class Boolean(Value):
+    _signature_value_type: str = "Boolean"
 
-
-class Lever(Value):
-    def __init__(self, refval):
+    def __init__(self, refval:str) -> None:
         super().__init__(refval)
-
-        self._signature_value_type = "Lever"
-
-    def getexpr(self):
-        return expressions.LeverExpression(types.Lever(self.refval))
 
 
 class Operator(Token):
-    def __init__(self, precedence=0):
-        self._signature_token_type = "Operator"
-        self._signature_operator_type = "None"
+    _signature_token_type = "Operator"
+    _signature_operator_type: str = "None"
 
-        self.precedence = precedence
+    def __init__(self, precedence:int=0):
+        self.precedence:int = precedence
 
     def __repr__(self):
         return (
@@ -151,100 +124,66 @@ class Operator(Token):
             f" P:{self.precedence}"
         )
 
-    def getexpr(self, left=None, right=None):
-        return expressions.OperationExpression(left, right)
 
+class Plus(Operator):
+    _signature_operator_type = "Plus"
 
-class Addition(Operator):
     def __init__(self):
-        super().__init__(constants.ADDITION_PRECEDENCE)
-
-        self._signature_operator_type = "Addition"
-
-    def getexpr(self, left=None, right=None):
-        return expressions.AdditionExpression(left, right)
+        super().__init__(ADDITION_PRECEDENCE)
 
 
-class Subtraction(Operator):
+class Minus(Operator):
+    _signature_operator_type = "Minus"
+
     def __init__(self):
-        super().__init__(constants.SUBTRACTION_PRECEDENCE)
-
-        self._signature_operator_type = "Subtraction"
-
-    def getexpr(self, left=None, right=None):
-        return expressions.SubtractionExpression(left, right)
+        super().__init__(SUBTRACTION_PRECEDENCE)
 
 
-class Multiplication(Operator):
+class Asterisk(Operator):
+    _signature_operator_type = "Asterisk"
+
     def __init__(self):
-        super().__init__(constants.MULTIPLICATION_PRECEDENCE)
-
-        self._signature_operator_type = "Multiplication"
-
-    def getexpr(self, left=None, right=None):
-        return expressions.MultiplicationExpression(left, right)
+        super().__init__(MULTIPLICATION_PRECEDENCE)
 
 
 class Division(Operator):
+    _signature_operator_type = "Division"
+
     def __init__(self):
-        super().__init__(constants.DIVISION_PRECEDENCE)
-
-        self._signature_operator_type = "Division"
-
-    def getexpr(self, left=None, right=None):
-        return expressions.DivisionExpression(left, right)
+        super().__init__(DIVISION_PRECEDENCE)
 
 
 class Modulo(Operator):
+    _signature_operator_type = "Modulo"
+
     def __init__(self):
-        super().__init__(constants.MODULO_PRECEDENCE)
-
-        self._signature_operator_type = "Modulo"
-
-    def getexpr(self, left=None, right=None):
-        return expressions.ModuloExpression(left, right)
+        super().__init__(MODULO_PRECEDENCE)
 
 
 class Assignment(Operator):
+    _signature_operator_type = "Assignment"
+
     def __init__(self):
-        super().__init__(constants.ASSIGNMENT_PRECEDENCE)
-
-        self._signature_operator_type = "Assignment"
-
-    def getexpr(self, left=None, right=None):
-        return expressions.AssignmentExpression(left, right)
+        super().__init__(ASSIGNMENT_PRECEDENCE)
 
 
 class Identifier(Token):
-    def __init__(self, name):
-        self._signature_token_type = "Identifier"
+    _signature_token_type = "Identifier"
 
-        self.name = name
+    def __init__(self, name: str):
+        self.name: str = name
 
     def __repr__(self):
         return f"{super().__repr__()} {self.name}"
 
-    def getexpr(self):
-        return expressions.IdentifierExpression(self)
-
 
 class Flow(Token):
-    def __init__(self):
-        self._signature_token_type = "Flow"
-        self._signature_flow_type = "None"
+    _signature_token_type = "Flow"
+    _signature_flow_type: str = "None"
 
     def __repr__(self):
         return f"{super().__repr__()} [{self._signature_flow_type}]"
 
-    def getexpr(self):
-        return expressions.FlowExpression()
-
 
 class Break(Flow):
-    def __init__(self):
-        super().__init__()
-
-        self._signature_flow_type = "Break"
-
-    def getexpr(self):
-        return expressions.BreakExpression()
+    _signature_flow_type = "Break"
