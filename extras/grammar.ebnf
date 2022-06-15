@@ -1,0 +1,44 @@
+program ::= instruction {";" instruction} [";"]
+
+instruction ::= expression | statement
+
+expression ::= value | operation
+
+statement ::= "finish" | ifstatement | whilestatement | dowhilestatement
+
+ifstatement ::=
+    "if" "(" expression ")" block
+    {"elif" "(" expression ")" block}
+    ["else" block]
+
+whilestatement ::= "while" "(" expression ")" block
+
+dowhilestatement ::= "do" block "while" "(" expression ")"
+
+block ::= "{" instruction {";" instruction} [";"] "}"
+
+operation ::= unaryop | binaryop | ternaryop | assignment
+
+unaryop ::= unop expression
+
+binaryop ::= expression binop expression
+
+ternaryop ::= expression "?" expression ":" expression
+
+unop ::= "+" | "-" | "not"
+
+binop ::= arithmeticop | relationalop | logicalop
+
+arithmeticop ::= "+" | "-" | "*" | "/" | "%"
+
+relationalop ::= ">" | "<" | ">=" | "<=" | "==" | "!="
+
+logicalop ::= "and" | "or" | "xor"
+
+assignment ::= identifier "(" type ")" "=" expression
+
+identifier ::= C[a-zA-Z_] {C[a-zA-Z0-9_]}
+
+type ::=
+    "abacus" | "rational" | "lever" | "scroll" | "template" |
+    "chest" "of" type | "dictionary" "of" type "to" type
